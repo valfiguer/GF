@@ -1,226 +1,158 @@
--- GoalFeed Database Schema
--- SQLite database for tracking articles, posts, and sources
+-- GoalFeed Database Schema (MySQL/MariaDB)
 
 -- RSS Sources table
 CREATE TABLE IF NOT EXISTS sources (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    url TEXT NOT NULL UNIQUE,
-    sport_hint TEXT NOT NULL,
-    weight INTEGER DEFAULT 10,
-    active INTEGER DEFAULT 1,
-    last_fetched_at TEXT,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    url VARCHAR(512) NOT NULL UNIQUE,
+    sport_hint VARCHAR(50) NOT NULL,
+    weight INT DEFAULT 10,
+    active TINYINT(1) DEFAULT 1,
+    last_fetched_at DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Articles table (all fetched articles)
+-- Articles table
 CREATE TABLE IF NOT EXISTS articles (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    source_id INTEGER,
-    
-    -- Original data
-    title TEXT NOT NULL,
-    normalized_title TEXT NOT NULL,
-    link TEXT NOT NULL,
-    canonical_url TEXT NOT NULL,
-    summary TEXT,
-    published_at TEXT,
-    
-    -- Classification
-    sport TEXT NOT NULL,
-    category TEXT,
-    status TEXT DEFAULT 'RUMOR',  -- CONFIRMADO, RUMOR, EN_DESARROLLO
-    
-    -- Scoring
-    score INTEGER DEFAULT 0,
-    
-    -- Deduplication
-    content_hash TEXT NOT NULL,
-    
-    -- Media
-    image_url TEXT,
-    
-    -- Metadata
-    source_name TEXT,
-    source_domain TEXT,
-    
-    -- Tracking
-    is_duplicate INTEGER DEFAULT 0,
-    is_posted INTEGER DEFAULT 0,
-    is_digested INTEGER DEFAULT 0,
-    
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    source_id INT NULL,
+    title VARCHAR(1024) NOT NULL,
+    normalized_title VARCHAR(1024) NOT NULL,
+    link VARCHAR(2048) NOT NULL,
+    canonical_url VARCHAR(2048) NOT NULL,
+    summary TEXT NULL,
+    published_at DATETIME NULL,
+    sport VARCHAR(50) NOT NULL,
+    category VARCHAR(100) NULL,
+    status VARCHAR(20) DEFAULT 'RUMOR',
+    score INT DEFAULT 0,
+    content_hash VARCHAR(64) NOT NULL,
+    image_url VARCHAR(2048) NULL,
+    source_name VARCHAR(255) NULL,
+    source_domain VARCHAR(255) NULL,
+    is_duplicate TINYINT(1) DEFAULT 0,
+    is_posted TINYINT(1) DEFAULT 0,
+    is_digested TINYINT(1) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_articles_canonical_url (canonical_url(191)),
+    INDEX idx_articles_content_hash (content_hash),
+    INDEX idx_articles_sport (sport),
+    INDEX idx_articles_score (score),
+    INDEX idx_articles_created_at (created_at),
+    INDEX idx_articles_is_posted (is_posted),
+    INDEX idx_articles_is_duplicate (is_duplicate),
     FOREIGN KEY (source_id) REFERENCES sources(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Create indexes for articles
-CREATE INDEX IF NOT EXISTS idx_articles_canonical_url ON articles(canonical_url);
-CREATE INDEX IF NOT EXISTS idx_articles_content_hash ON articles(content_hash);
-CREATE INDEX IF NOT EXISTS idx_articles_sport ON articles(sport);
-CREATE INDEX IF NOT EXISTS idx_articles_score ON articles(score DESC);
-CREATE INDEX IF NOT EXISTS idx_articles_created_at ON articles(created_at);
-CREATE INDEX IF NOT EXISTS idx_articles_is_posted ON articles(is_posted);
-CREATE INDEX IF NOT EXISTS idx_articles_is_duplicate ON articles(is_duplicate);
-
--- Posts table (published to Telegram)
+-- Posts table
 CREATE TABLE IF NOT EXISTS posts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    article_id INTEGER,
-    
-    -- Telegram data
-    telegram_message_id INTEGER,
-    telegram_chat_id TEXT,
-    
-    -- Content
-    caption TEXT,
-    image_path TEXT,
-    
-    -- Metadata
-    sport TEXT,
-    post_type TEXT DEFAULT 'single',  -- single, digest
-    
-    -- Timing
-    posted_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    article_id INT NULL,
+    telegram_message_id INT NULL,
+    telegram_chat_id VARCHAR(100) NULL,
+    caption TEXT NULL,
+    image_path VARCHAR(512) NULL,
+    sport VARCHAR(50) NULL,
+    post_type VARCHAR(20) DEFAULT 'single',
+    posted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_posts_posted_at (posted_at),
+    INDEX idx_posts_sport (sport),
+    INDEX idx_posts_post_type (post_type),
     FOREIGN KEY (article_id) REFERENCES articles(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Create indexes for posts
-CREATE INDEX IF NOT EXISTS idx_posts_posted_at ON posts(posted_at);
-CREATE INDEX IF NOT EXISTS idx_posts_sport ON posts(sport);
-CREATE INDEX IF NOT EXISTS idx_posts_post_type ON posts(post_type);
-
--- Digests table (grouped posts)
+-- Digests table
 CREATE TABLE IF NOT EXISTS digests (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    
-    -- Telegram data
-    telegram_message_id INTEGER,
-    telegram_chat_id TEXT,
-    
-    -- Content
-    caption TEXT,
-    image_path TEXT,
-    
-    -- Metadata
-    sport TEXT NOT NULL,
-    article_count INTEGER DEFAULT 0,
-    
-    -- Timing
-    posted_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    telegram_message_id INT NULL,
+    telegram_chat_id VARCHAR(100) NULL,
+    caption TEXT NULL,
+    image_path VARCHAR(512) NULL,
+    sport VARCHAR(50) NOT NULL,
+    article_count INT DEFAULT 0,
+    posted_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Digest items (articles in a digest)
+-- Digest items
 CREATE TABLE IF NOT EXISTS digest_items (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    digest_id INTEGER NOT NULL,
-    article_id INTEGER NOT NULL,
-    position INTEGER DEFAULT 0,
-    
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    digest_id INT NOT NULL,
+    article_id INT NOT NULL,
+    position INT DEFAULT 0,
+    INDEX idx_digest_items_digest_id (digest_id),
     FOREIGN KEY (digest_id) REFERENCES digests(id),
     FOREIGN KEY (article_id) REFERENCES articles(id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE INDEX IF NOT EXISTS idx_digest_items_digest_id ON digest_items(digest_id);
-
--- Settings table (optional, for runtime config)
+-- Settings table
 CREATE TABLE IF NOT EXISTS settings (
-    key TEXT PRIMARY KEY,
-    value TEXT,
-    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+    `key` VARCHAR(191) PRIMARY KEY,
+    `value` TEXT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Daily stats table (for tracking limits)
+-- Daily stats table
 CREATE TABLE IF NOT EXISTS daily_stats (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL UNIQUE,
-    post_count INTEGER DEFAULT 0,
-    digest_count INTEGER DEFAULT 0,
-    articles_fetched INTEGER DEFAULT 0,
-    articles_duplicated INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    `date` VARCHAR(10) NOT NULL UNIQUE,
+    post_count INT DEFAULT 0,
+    digest_count INT DEFAULT 0,
+    articles_fetched INT DEFAULT 0,
+    articles_duplicated INT DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_daily_stats_date (`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE INDEX IF NOT EXISTS idx_daily_stats_date ON daily_stats(date);
-
--- Live events table (for tracking live match events)
+-- Live events table
 CREATE TABLE IF NOT EXISTS live_events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    
-    -- Match identification
-    match_id TEXT NOT NULL,  -- External API match ID
-    league_id INTEGER,
-    league_name TEXT,
-    
-    -- Teams
-    home_team TEXT NOT NULL,
-    away_team TEXT NOT NULL,
-    
-    -- Score at event time
-    home_score INTEGER DEFAULT 0,
-    away_score INTEGER DEFAULT 0,
-    
-    -- Event details
-    event_type TEXT NOT NULL,  -- goal, red_card, final, penalty_miss, var
-    event_minute INTEGER,
-    event_player TEXT,
-    event_detail TEXT,  -- Additional info (assist, penalty, own goal, etc.)
-    
-    -- Telegram data
-    telegram_message_id INTEGER,
-    telegram_chat_id TEXT,
-    
-    -- Tracking
-    is_published INTEGER DEFAULT 0,
-    published_at TEXT,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    
-    -- Unique constraint to prevent duplicate events
-    UNIQUE(match_id, event_type, event_minute, event_player)
-);
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    match_id VARCHAR(100) NOT NULL,
+    league_id INT NULL,
+    league_name VARCHAR(255) NULL,
+    home_team VARCHAR(255) NOT NULL,
+    away_team VARCHAR(255) NOT NULL,
+    home_score INT DEFAULT 0,
+    away_score INT DEFAULT 0,
+    event_type VARCHAR(50) NOT NULL,
+    event_minute INT NULL,
+    event_player VARCHAR(255) NULL,
+    event_detail VARCHAR(512) NULL,
+    telegram_message_id INT NULL,
+    telegram_chat_id VARCHAR(100) NULL,
+    is_published TINYINT(1) DEFAULT 0,
+    published_at DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_live_event (match_id, event_type, event_minute, event_player(100)),
+    INDEX idx_live_events_match_id (match_id),
+    INDEX idx_live_events_event_type (event_type),
+    INDEX idx_live_events_created_at (created_at),
+    INDEX idx_live_events_is_published (is_published)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Create indexes for live_events
-CREATE INDEX IF NOT EXISTS idx_live_events_match_id ON live_events(match_id);
-CREATE INDEX IF NOT EXISTS idx_live_events_event_type ON live_events(event_type);
-CREATE INDEX IF NOT EXISTS idx_live_events_created_at ON live_events(created_at);
-CREATE INDEX IF NOT EXISTS idx_live_events_is_published ON live_events(is_published);
-
--- Live matches table (for tracking active matches)
+-- Live matches table
 CREATE TABLE IF NOT EXISTS live_matches (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    
-    -- Match identification
-    match_id TEXT NOT NULL UNIQUE,
-    league_id INTEGER,
-    league_name TEXT,
-    
-    -- Teams
-    home_team TEXT NOT NULL,
-    away_team TEXT NOT NULL,
-    
-    -- Current state
-    home_score INTEGER DEFAULT 0,
-    away_score INTEGER DEFAULT 0,
-    match_status TEXT,  -- NS, 1H, HT, 2H, FT, etc.
-    current_minute INTEGER,
-    
-    -- Tracking
-    events_published INTEGER DEFAULT 0,
-    last_event_at TEXT,
-    is_top_team_match INTEGER DEFAULT 0,
-    
-    -- Timestamps
-    match_start TEXT,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX IF NOT EXISTS idx_live_matches_match_id ON live_matches(match_id);
-CREATE INDEX IF NOT EXISTS idx_live_matches_match_status ON live_matches(match_status);
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    match_id VARCHAR(100) NOT NULL UNIQUE,
+    league_id INT NULL,
+    league_name VARCHAR(255) NULL,
+    home_team VARCHAR(255) NOT NULL,
+    away_team VARCHAR(255) NOT NULL,
+    home_score INT DEFAULT 0,
+    away_score INT DEFAULT 0,
+    match_status VARCHAR(20) NULL,
+    current_minute INT NULL,
+    events_published INT DEFAULT 0,
+    last_event_at DATETIME NULL,
+    is_top_team_match TINYINT(1) DEFAULT 0,
+    match_start DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_live_matches_match_id (match_id),
+    INDEX idx_live_matches_match_status (match_status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert default settings
-INSERT OR IGNORE INTO settings (key, value) VALUES ('initialized', 'true');
-INSERT OR IGNORE INTO settings (key, value) VALUES ('version', '1.1.0');
+INSERT IGNORE INTO settings (`key`, `value`) VALUES ('initialized', 'true');
+INSERT IGNORE INTO settings (`key`, `value`) VALUES ('version', '1.1.0')

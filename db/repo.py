@@ -126,22 +126,22 @@ class Repository:
             Source ID
         """
         existing = self.db.fetchone(
-            "SELECT id FROM sources WHERE url = ?",
+            "SELECT id FROM sources WHERE url = %s",
             (url,)
         )
-        
+
         if existing:
             self.db.execute(
-                """UPDATE sources 
-                   SET name = ?, sport_hint = ?, weight = ?, updated_at = ?
-                   WHERE url = ?""",
+                """UPDATE sources
+                   SET name = %s, sport_hint = %s, weight = %s, updated_at = %s
+                   WHERE url = %s""",
                 (name, sport_hint, weight, datetime_to_iso(utc_now()), url)
             )
             return existing['id']
         else:
             cursor = self.db.execute(
                 """INSERT INTO sources (name, url, sport_hint, weight)
-                   VALUES (?, ?, ?, ?)""",
+                   VALUES (%s, %s, %s, %s)""",
                 (name, url, sport_hint, weight)
             )
             return cursor.lastrowid
@@ -149,7 +149,7 @@ class Repository:
     def update_source_fetched(self, source_id: int):
         """Update the last_fetched_at timestamp for a source."""
         self.db.execute(
-            "UPDATE sources SET last_fetched_at = ? WHERE id = ?",
+            "UPDATE sources SET last_fetched_at = %s WHERE id = %s",
             (datetime_to_iso(utc_now()), source_id)
         )
     
@@ -187,7 +187,7 @@ class Repository:
         
         # Check if exists by canonical_url
         existing = self.db.fetchone(
-            "SELECT id FROM articles WHERE canonical_url = ?",
+            "SELECT id FROM articles WHERE canonical_url = %s",
             (article.canonical_url,)
         )
         
@@ -195,10 +195,10 @@ class Repository:
             # Update existing
             self.db.execute(
                 """UPDATE articles SET
-                   title = ?, normalized_title = ?, summary = ?,
-                   sport = ?, category = ?, status = ?, score = ?,
-                   image_url = ?, updated_at = ?
-                   WHERE id = ?""",
+                   title = %s, normalized_title = %s, summary = %s,
+                   sport = %s, category = %s, status = %s, score = %s,
+                   image_url = %s, updated_at = %s
+                   WHERE id = %s""",
                 (
                     article.title, article.normalized_title, article.summary,
                     article.sport, article.category, article.status, article.score,
@@ -214,7 +214,7 @@ class Repository:
                     summary, published_at, sport, category, status, score,
                     content_hash, image_url, source_name, source_domain,
                     is_duplicate, is_posted, is_digested, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (
                     article.source_id, article.title, article.normalized_title,
                     article.link, article.canonical_url, article.summary,
@@ -230,7 +230,7 @@ class Repository:
     def get_article_by_id(self, article_id: int) -> Optional[Dict]:
         """Get an article by ID."""
         row = self.db.fetchone(
-            "SELECT * FROM articles WHERE id = ?",
+            "SELECT * FROM articles WHERE id = %s",
             (article_id,)
         )
         return dict(row) if row else None
@@ -238,7 +238,7 @@ class Repository:
     def get_article_by_canonical_url(self, canonical_url: str) -> Optional[Dict]:
         """Get an article by canonical URL."""
         row = self.db.fetchone(
-            "SELECT * FROM articles WHERE canonical_url = ?",
+            "SELECT * FROM articles WHERE canonical_url = %s",
             (canonical_url,)
         )
         return dict(row) if row else None
@@ -246,7 +246,7 @@ class Repository:
     def get_article_by_content_hash(self, content_hash: str) -> Optional[Dict]:
         """Get an article by content hash."""
         row = self.db.fetchone(
-            "SELECT * FROM articles WHERE content_hash = ?",
+            "SELECT * FROM articles WHERE content_hash = %s",
             (content_hash,)
         )
         return dict(row) if row else None
@@ -264,7 +264,7 @@ class Repository:
         """
         row = self.db.fetchone(
             """SELECT id FROM articles 
-               WHERE canonical_url = ? OR content_hash = ?
+               WHERE canonical_url = %s OR content_hash = %s
                LIMIT 1""",
             (canonical_url, content_hash)
         )
@@ -292,11 +292,11 @@ class Repository:
         cutoff = utc_now() - timedelta(hours=hours)
         cutoff_str = datetime_to_iso(cutoff)
         
-        query = "SELECT * FROM articles WHERE created_at >= ?"
+        query = "SELECT * FROM articles WHERE created_at >= %s"
         params = [cutoff_str]
         
         if sport:
-            query += " AND sport = ?"
+            query += " AND sport = %s"
             params.append(sport)
         
         if posted_only:
@@ -329,9 +329,9 @@ class Repository:
                WHERE is_posted = 0 
                AND is_duplicate = 0 
                AND is_digested = 0
-               AND score >= ?
+               AND score >= %s
                ORDER BY score DESC, created_at DESC
-               LIMIT ?""",
+               LIMIT %s""",
             (min_score, limit)
         )
         return [dict(row) for row in rows]
@@ -360,12 +360,12 @@ class Repository:
         
         rows = self.db.fetchall(
             """SELECT * FROM articles 
-               WHERE sport = ?
+               WHERE sport = %s
                AND is_posted = 0 
                AND is_duplicate = 0
                AND is_digested = 0
-               AND score >= ? AND score <= ?
-               AND created_at >= ?
+               AND score >= %s AND score <= %s
+               AND created_at >= %s
                ORDER BY score DESC
                LIMIT 10""",
             (sport, score_min, score_max, cutoff_str)
@@ -375,14 +375,14 @@ class Repository:
     def mark_article_posted(self, article_id: int):
         """Mark an article as posted."""
         self.db.execute(
-            "UPDATE articles SET is_posted = 1, updated_at = ? WHERE id = ?",
+            "UPDATE articles SET is_posted = 1, updated_at = %s WHERE id = %s",
             (datetime_to_iso(utc_now()), article_id)
         )
     
     def mark_article_duplicate(self, article_id: int):
         """Mark an article as duplicate."""
         self.db.execute(
-            "UPDATE articles SET is_duplicate = 1, updated_at = ? WHERE id = ?",
+            "UPDATE articles SET is_duplicate = 1, updated_at = %s WHERE id = %s",
             (datetime_to_iso(utc_now()), article_id)
         )
     
@@ -391,7 +391,7 @@ class Repository:
         now = datetime_to_iso(utc_now())
         for article_id in article_ids:
             self.db.execute(
-                "UPDATE articles SET is_digested = 1, updated_at = ? WHERE id = ?",
+                "UPDATE articles SET is_digested = 1, updated_at = %s WHERE id = %s",
                 (now, article_id)
             )
     
@@ -416,7 +416,7 @@ class Repository:
         
         rows = self.db.fetchall(
             """SELECT id, normalized_title, canonical_url FROM articles 
-               WHERE created_at >= ?
+               WHERE created_at >= %s
                ORDER BY created_at DESC
                LIMIT 500""",
             (cutoff_str,)
@@ -447,7 +447,7 @@ class Repository:
             """INSERT INTO posts (
                 article_id, telegram_message_id, telegram_chat_id,
                 caption, image_path, sport, post_type, posted_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
             (
                 article_id, telegram_message_id, telegram_chat_id,
                 caption, image_path, sport, post_type,
@@ -477,7 +477,7 @@ class Repository:
         start_str = datetime_to_iso(start_of_day)
         
         row = self.db.fetchone(
-            "SELECT COUNT(*) as count FROM posts WHERE posted_at >= ?",
+            "SELECT COUNT(*) as count FROM posts WHERE posted_at >= %s",
             (start_str,)
         )
         return row['count'] if row else 0
@@ -493,7 +493,7 @@ class Repository:
         cutoff_str = datetime_to_iso(cutoff)
         
         row = self.db.fetchone(
-            "SELECT COUNT(*) as count FROM posts WHERE posted_at >= ?",
+            "SELECT COUNT(*) as count FROM posts WHERE posted_at >= %s",
             (cutoff_str,)
         )
         return row['count'] if row else 0
@@ -510,7 +510,7 @@ class Repository:
         """
         row = self.db.fetchone(
             """SELECT posted_at FROM posts 
-               WHERE sport = ? 
+               WHERE sport = %s 
                ORDER BY posted_at DESC 
                LIMIT 1""",
             (sport,)
@@ -530,7 +530,7 @@ class Repository:
             """SELECT p.*, a.title as article_title
                FROM posts p
                LEFT JOIN articles a ON p.article_id = a.id
-               WHERE p.posted_at >= ?
+               WHERE p.posted_at >= %s
                ORDER BY p.posted_at DESC""",
             (cutoff_str,)
         )
@@ -559,7 +559,7 @@ class Repository:
             """INSERT INTO digests (
                 telegram_message_id, telegram_chat_id, caption,
                 image_path, sport, article_count, posted_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
             (
                 telegram_message_id, telegram_chat_id, caption,
                 image_path, sport, len(article_ids),
@@ -573,7 +573,7 @@ class Repository:
         for pos, article_id in enumerate(article_ids):
             self.db.execute(
                 """INSERT INTO digest_items (digest_id, article_id, position)
-                   VALUES (?, ?, ?)""",
+                   VALUES (%s, %s, %s)""",
                 (digest_id, article_id, pos)
             )
         
@@ -591,7 +591,7 @@ class Repository:
         start_str = datetime_to_iso(start_of_day)
         
         row = self.db.fetchone(
-            "SELECT COUNT(*) as count FROM digests WHERE posted_at >= ?",
+            "SELECT COUNT(*) as count FROM digests WHERE posted_at >= %s",
             (start_str,)
         )
         return row['count'] if row else 0
@@ -608,12 +608,12 @@ class Repository:
         """Ensure today's daily stats row exists."""
         today = self._get_today_date()
         existing = self.db.fetchone(
-            "SELECT id FROM daily_stats WHERE date = ?",
+            "SELECT id FROM daily_stats WHERE `date` = %s",
             (today,)
         )
         if not existing:
             self.db.execute(
-                "INSERT INTO daily_stats (date) VALUES (?)",
+                "INSERT INTO daily_stats (`date`) VALUES (%s)",
                 (today,)
             )
     
@@ -623,8 +623,8 @@ class Repository:
         today = self._get_today_date()
         self.db.execute(
             """UPDATE daily_stats 
-               SET post_count = post_count + 1, updated_at = ?
-               WHERE date = ?""",
+               SET post_count = post_count + 1, updated_at = %s
+               WHERE `date` = %s""",
             (datetime_to_iso(utc_now()), today)
         )
     
@@ -634,8 +634,8 @@ class Repository:
         today = self._get_today_date()
         self.db.execute(
             """UPDATE daily_stats 
-               SET digest_count = digest_count + 1, updated_at = ?
-               WHERE date = ?""",
+               SET digest_count = digest_count + 1, updated_at = %s
+               WHERE `date` = %s""",
             (datetime_to_iso(utc_now()), today)
         )
     
@@ -645,8 +645,8 @@ class Repository:
         today = self._get_today_date()
         self.db.execute(
             """UPDATE daily_stats 
-               SET articles_fetched = articles_fetched + ?, updated_at = ?
-               WHERE date = ?""",
+               SET articles_fetched = articles_fetched + %s, updated_at = %s
+               WHERE `date` = %s""",
             (count, datetime_to_iso(utc_now()), today)
         )
     
@@ -656,8 +656,8 @@ class Repository:
         today = self._get_today_date()
         self.db.execute(
             """UPDATE daily_stats 
-               SET articles_duplicated = articles_duplicated + ?, updated_at = ?
-               WHERE date = ?""",
+               SET articles_duplicated = articles_duplicated + %s, updated_at = %s
+               WHERE `date` = %s""",
             (count, datetime_to_iso(utc_now()), today)
         )
     
@@ -667,7 +667,7 @@ class Repository:
             date = self._get_today_date()
         
         row = self.db.fetchone(
-            "SELECT * FROM daily_stats WHERE date = ?",
+            "SELECT * FROM daily_stats WHERE `date` = %s",
             (date,)
         )
         return dict(row) if row else None
@@ -679,7 +679,7 @@ class Repository:
     def get_setting(self, key: str, default: Optional[str] = None) -> Optional[str]:
         """Get a setting value."""
         row = self.db.fetchone(
-            "SELECT value FROM settings WHERE key = ?",
+            "SELECT `value` FROM settings WHERE `key` = %s",
             (key,)
         )
         return row['value'] if row else default
@@ -687,8 +687,8 @@ class Repository:
     def set_setting(self, key: str, value: str):
         """Set a setting value."""
         self.db.execute(
-            """INSERT OR REPLACE INTO settings (key, value, updated_at)
-               VALUES (?, ?, ?)""",
+            """REPLACE INTO settings (`key`, `value`, updated_at)
+               VALUES (%s, %s, %s)""",
             (key, value, datetime_to_iso(utc_now()))
         )
     
@@ -719,16 +719,16 @@ class Repository:
         now = datetime_to_iso(utc_now())
         
         existing = self.db.fetchone(
-            "SELECT id FROM live_matches WHERE match_id = ?",
+            "SELECT id FROM live_matches WHERE match_id = %s",
             (match_id,)
         )
         
         if existing:
             self.db.execute(
                 """UPDATE live_matches SET
-                   home_score = ?, away_score = ?, match_status = ?,
-                   current_minute = ?, updated_at = ?
-                   WHERE match_id = ?""",
+                   home_score = %s, away_score = %s, match_status = %s,
+                   current_minute = %s, updated_at = %s
+                   WHERE match_id = %s""",
                 (home_score, away_score, match_status, current_minute, now, match_id)
             )
             return existing['id']
@@ -738,7 +738,7 @@ class Repository:
                     match_id, league_id, league_name, home_team, away_team,
                     home_score, away_score, match_status, current_minute,
                     is_top_team_match, match_start, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (
                     match_id, league_id, league_name, home_team, away_team,
                     home_score, away_score, match_status, current_minute,
@@ -750,7 +750,7 @@ class Repository:
     def get_live_match(self, match_id: str) -> Optional[Dict]:
         """Get a live match by match_id."""
         row = self.db.fetchone(
-            "SELECT * FROM live_matches WHERE match_id = ?",
+            "SELECT * FROM live_matches WHERE match_id = %s",
             (match_id,)
         )
         return dict(row) if row else None
@@ -770,16 +770,16 @@ class Repository:
         self.db.execute(
             """UPDATE live_matches 
                SET events_published = events_published + 1,
-                   last_event_at = ?,
-                   updated_at = ?
-               WHERE match_id = ?""",
+                   last_event_at = %s,
+                   updated_at = %s
+               WHERE match_id = %s""",
             (now, now, match_id)
         )
     
     def get_match_event_count(self, match_id: str) -> int:
         """Get the number of events published for a match."""
         row = self.db.fetchone(
-            "SELECT events_published FROM live_matches WHERE match_id = ?",
+            "SELECT events_published FROM live_matches WHERE match_id = %s",
             (match_id,)
         )
         return row['events_published'] if row else 0
@@ -787,7 +787,7 @@ class Repository:
     def get_last_event_time(self, match_id: str) -> Optional[datetime]:
         """Get the last event time for a match."""
         row = self.db.fetchone(
-            "SELECT last_event_at FROM live_matches WHERE match_id = ?",
+            "SELECT last_event_at FROM live_matches WHERE match_id = %s",
             (match_id,)
         )
         if row and row['last_event_at']:
@@ -830,7 +830,7 @@ class Repository:
                     home_score, away_score, event_type, event_minute,
                     event_player, event_detail, telegram_message_id,
                     telegram_chat_id, is_published, published_at, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (
                     match_id, league_id, league_name, home_team, away_team,
                     home_score, away_score, event_type, event_minute,
@@ -856,20 +856,20 @@ class Repository:
         if event_minute is not None and event_player:
             row = self.db.fetchone(
                 """SELECT id FROM live_events 
-                   WHERE match_id = ? AND event_type = ? 
-                   AND event_minute = ? AND event_player = ?""",
+                   WHERE match_id = %s AND event_type = %s 
+                   AND event_minute = %s AND event_player = %s""",
                 (match_id, event_type, event_minute, event_player)
             )
         elif event_type == 'final':
             row = self.db.fetchone(
                 """SELECT id FROM live_events 
-                   WHERE match_id = ? AND event_type = 'final'""",
+                   WHERE match_id = %s AND event_type = 'final'""",
                 (match_id,)
             )
         else:
             row = self.db.fetchone(
                 """SELECT id FROM live_events 
-                   WHERE match_id = ? AND event_type = ?""",
+                   WHERE match_id = %s AND event_type = %s""",
                 (match_id, event_type)
             )
         
@@ -879,7 +879,7 @@ class Repository:
         """Get all events for a match."""
         rows = self.db.fetchall(
             """SELECT * FROM live_events 
-               WHERE match_id = ?
+               WHERE match_id = %s
                ORDER BY event_minute ASC, created_at ASC""",
             (match_id,)
         )
@@ -892,7 +892,7 @@ class Repository:
 
         row = self.db.fetchone(
             """SELECT COUNT(*) as count FROM live_events
-               WHERE is_published = 1 AND published_at >= ?""",
+               WHERE is_published = 1 AND published_at >= %s""",
             (start_str,)
         )
         return row['count'] if row else 0
@@ -911,7 +911,7 @@ class Repository:
                 sport, category, status, image_filename, image_url,
                 source_name, source_url, is_published, is_featured,
                 view_count, score, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (
                 article.article_id, article.slug, article.headline,
                 article.subtitle, article.body_html, article.body_text,
@@ -929,7 +929,7 @@ class Repository:
     def get_web_article_by_slug(self, slug: str) -> Optional[Dict]:
         """Get a web article by slug."""
         row = self.db.fetchone(
-            "SELECT * FROM web_articles WHERE slug = ?",
+            "SELECT * FROM web_articles WHERE slug = %s",
             (slug,)
         )
         return dict(row) if row else None
@@ -937,7 +937,7 @@ class Repository:
     def get_web_article_by_article_id(self, article_id: int) -> Optional[Dict]:
         """Get a web article by its parent article ID."""
         row = self.db.fetchone(
-            "SELECT * FROM web_articles WHERE article_id = ?",
+            "SELECT * FROM web_articles WHERE article_id = %s",
             (article_id,)
         )
         return dict(row) if row else None
@@ -954,10 +954,10 @@ class Repository:
         params: list = []
 
         if sport:
-            query += " AND sport = ?"
+            query += " AND sport = %s"
             params.append(sport)
 
-        query += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
+        query += " ORDER BY created_at DESC LIMIT %s OFFSET %s"
         params.extend([per_page, offset])
 
         rows = self.db.fetchall(query, tuple(params))
@@ -968,7 +968,7 @@ class Repository:
         rows = self.db.fetchall(
             """SELECT * FROM web_articles
                WHERE is_published = 1 AND is_featured = 1
-               ORDER BY created_at DESC LIMIT ?""",
+               ORDER BY created_at DESC LIMIT %s""",
             (limit,)
         )
         return [dict(row) for row in rows]
@@ -978,7 +978,7 @@ class Repository:
         rows = self.db.fetchall(
             """SELECT * FROM web_articles
                WHERE is_published = 1
-               ORDER BY created_at DESC LIMIT ?""",
+               ORDER BY created_at DESC LIMIT %s""",
             (limit,)
         )
         return [dict(row) for row in rows]
@@ -986,7 +986,7 @@ class Repository:
     def increment_view_count(self, slug: str):
         """Increment the view count for a web article."""
         self.db.execute(
-            "UPDATE web_articles SET view_count = view_count + 1 WHERE slug = ?",
+            "UPDATE web_articles SET view_count = view_count + 1 WHERE slug = %s",
             (slug,)
         )
 
@@ -994,7 +994,7 @@ class Repository:
         """Get total count of published web articles, optionally by sport."""
         if sport:
             row = self.db.fetchone(
-                "SELECT COUNT(*) as count FROM web_articles WHERE is_published = 1 AND sport = ?",
+                "SELECT COUNT(*) as count FROM web_articles WHERE is_published = 1 AND sport = %s",
                 (sport,)
             )
         else:
@@ -1007,8 +1007,8 @@ class Repository:
         """Get related web articles by sport, excluding current."""
         rows = self.db.fetchall(
             """SELECT * FROM web_articles
-               WHERE is_published = 1 AND sport = ? AND slug != ?
-               ORDER BY created_at DESC LIMIT ?""",
+               WHERE is_published = 1 AND sport = %s AND slug != %s
+               ORDER BY created_at DESC LIMIT %s""",
             (sport, exclude_slug, limit)
         )
         return [dict(row) for row in rows]
@@ -1019,7 +1019,7 @@ class Repository:
         """Get visible comments for a web article."""
         rows = self.db.fetchall(
             """SELECT * FROM web_comments
-               WHERE web_article_id = ? AND is_visible = 1
+               WHERE web_article_id = %s AND is_visible = 1
                ORDER BY created_at ASC""",
             (web_article_id,)
         )
@@ -1029,7 +1029,7 @@ class Repository:
         """Add a comment to a web article. Returns comment id."""
         cursor = self.db.execute(
             """INSERT INTO web_comments (web_article_id, user_name, user_initials, comment_text)
-               VALUES (?, ?, ?, ?)""",
+               VALUES (%s, %s, %s, %s)""",
             (web_article_id, user_name, user_initials, comment_text)
         )
         return cursor.lastrowid
@@ -1037,7 +1037,7 @@ class Repository:
     def get_comment_count(self, web_article_id: int) -> int:
         """Get comment count for a web article."""
         row = self.db.fetchone(
-            "SELECT COUNT(*) as count FROM web_comments WHERE web_article_id = ? AND is_visible = 1",
+            "SELECT COUNT(*) as count FROM web_comments WHERE web_article_id = %s AND is_visible = 1",
             (web_article_id,)
         )
         return row['count'] if row else 0

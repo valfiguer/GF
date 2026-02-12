@@ -135,8 +135,12 @@ class Config:
     # Watermark
     watermark: WatermarkConfig = field(default_factory=WatermarkConfig)
     
-    # Database
-    db_path: str = "data/goalfeed.db"
+    # Database (MySQL/MariaDB)
+    db_host: str = "localhost"
+    db_user: str = ""
+    db_password: str = ""
+    db_name: str = ""
+    db_charset: str = "utf8mb4"
     
     # Logging
     log_level: str = "INFO"
@@ -187,7 +191,17 @@ class Config:
             self.max_posts_per_hour = int(os.getenv("MAX_POSTS_PER_HOUR"))
         if os.getenv("LOG_LEVEL"):
             self.log_level = os.getenv("LOG_LEVEL")
-        
+
+        # Database config from environment
+        if os.getenv("DB_HOST"):
+            self.db_host = os.getenv("DB_HOST")
+        if os.getenv("DB_USER"):
+            self.db_user = os.getenv("DB_USER")
+        if os.getenv("DB_PASSWORD"):
+            self.db_password = os.getenv("DB_PASSWORD")
+        if os.getenv("DB_NAME"):
+            self.db_name = os.getenv("DB_NAME")
+
         # Live config from environment
         if os.getenv("FOOTBALL_API_KEY"):
             self.live.api_key = os.getenv("FOOTBALL_API_KEY")

@@ -1,10 +1,11 @@
 """
 Database connection and initialization for GoalFeed.
+MySQL/MariaDB backend via PyMySQL.
 """
-import sqlite3
+import pymysql
+import pymysql.cursors
 import os
 import logging
-from pathlib import Path
 from typing import Optional
 from contextlib import contextmanager
 
@@ -12,56 +13,43 @@ logger = logging.getLogger(__name__)
 
 
 class Database:
-    """SQLite database connection manager."""
-    
-    def __init__(self, db_path: str = "data/goalfeed.db"):
-        """
-        Initialize database connection.
-        
-        Args:
-            db_path: Path to SQLite database file
-        """
-        self.db_path = db_path
-        self._ensure_directory()
-        self._connection: Optional[sqlite3.Connection] = None
-    
-    def _ensure_directory(self):
-        """Ensure the database directory exists."""
-        db_dir = os.path.dirname(self.db_path)
-        if db_dir:
-            Path(db_dir).mkdir(parents=True, exist_ok=True)
-    
-    def connect(self) -> sqlite3.Connection:
-        """
-        Get or create a database connection.
-        
-        Returns:
-            SQLite connection
-        """
-        if self._connection is None:
-            self._connection = sqlite3.connect(
-                self.db_path,
-                check_same_thread=False,
-                detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
+    """MySQL/MariaDB database connection manager."""
+
+    def __init__(self, host: str, user: str, password: str, database: str, charset: str = "utf8mb4"):
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
+        self.charset = charset
+        self._connection: Optional[pymysql.connections.Connection] = None
+
+    def connect(self) -> pymysql.connections.Connection:
+        """Get or create a database connection."""
+        if self._connection is None or not self._connection.open:
+            self._connection = pymysql.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                charset=self.charset,
+                cursorclass=pymysql.cursors.DictCursor,
+                autocommit=False,
             )
-            # Enable foreign keys
-            self._connection.execute("PRAGMA foreign_keys = ON")
-            # Enable WAL mode for concurrent reads
-            self._connection.execute("PRAGMA journal_mode = WAL")
-            # Return rows as dictionaries
-            self._connection.row_factory = sqlite3.Row
-            logger.info(f"Connected to database: {self.db_path}")
-        
+            logger.info(f"Connected to MySQL database: {self.database}@{self.host}")
         return self._connection
-    
+
+    def _ping(self):
+        """Reconnect if the connection was lost."""
+        try:
+            self.connect().ping(reconnect=True)
+        except Exception:
+            self._connection = None
+            self.connect()
+
     @contextmanager
     def get_cursor(self):
-        """
-        Context manager for database cursor.
-        
-        Yields:
-            SQLite cursor
-        """
+        """Context manager for database cursor."""
+        self._ping()
         conn = self.connect()
         cursor = conn.cursor()
         try:
@@ -73,110 +61,81 @@ class Database:
             raise
         finally:
             cursor.close()
-    
-    def execute(self, query: str, params: tuple = ()) -> sqlite3.Cursor:
-        """
-        Execute a query and return the cursor.
-        
-        Args:
-            query: SQL query
-            params: Query parameters
-            
-        Returns:
-            Cursor with results
-        """
+
+    def execute(self, query: str, params: tuple = ()):
+        """Execute a query and return the cursor."""
+        self._ping()
         conn = self.connect()
         cursor = conn.cursor()
         cursor.execute(query, params)
         conn.commit()
         return cursor
-    
-    def executemany(self, query: str, params_list: list) -> sqlite3.Cursor:
-        """
-        Execute a query with multiple parameter sets.
-        
-        Args:
-            query: SQL query
-            params_list: List of parameter tuples
-            
-        Returns:
-            Cursor with results
-        """
+
+    def executemany(self, query: str, params_list: list):
+        """Execute a query with multiple parameter sets."""
+        self._ping()
         conn = self.connect()
         cursor = conn.cursor()
         cursor.executemany(query, params_list)
         conn.commit()
         return cursor
-    
-    def fetchone(self, query: str, params: tuple = ()) -> Optional[sqlite3.Row]:
-        """
-        Fetch a single row.
-        
-        Args:
-            query: SQL query
-            params: Query parameters
-            
-        Returns:
-            Row or None
-        """
-        cursor = self.execute(query, params)
+
+    def fetchone(self, query: str, params: tuple = ()) -> Optional[dict]:
+        """Fetch a single row as dict."""
+        self._ping()
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        conn.commit()
         return cursor.fetchone()
-    
-    def fetchall(self, query: str, params: tuple = ()) -> list[sqlite3.Row]:
-        """
-        Fetch all rows.
-        
-        Args:
-            query: SQL query
-            params: Query parameters
-            
-        Returns:
-            List of rows
-        """
-        cursor = self.execute(query, params)
+
+    def fetchall(self, query: str, params: tuple = ()) -> list[dict]:
+        """Fetch all rows as list of dicts."""
+        self._ping()
+        conn = self.connect()
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        conn.commit()
         return cursor.fetchall()
-    
+
     def init_schema(self, schema_path: Optional[str] = None):
-        """
-        Initialize database schema from SQL file.
-        
-        Args:
-            schema_path: Path to schema.sql file
-        """
+        """Initialize database schema from SQL file."""
         if schema_path is None:
-            # Default schema path relative to this file
-            schema_path = os.path.join(
-                os.path.dirname(__file__),
-                'schema.sql'
-            )
-        
+            schema_path = os.path.join(os.path.dirname(__file__), 'schema.sql')
+
         if not os.path.exists(schema_path):
             raise FileNotFoundError(f"Schema file not found: {schema_path}")
-        
+
         with open(schema_path, 'r', encoding='utf-8') as f:
             schema_sql = f.read()
-        
+
+        self._ping()
         conn = self.connect()
-        conn.executescript(schema_sql)
+        cursor = conn.cursor()
+        for statement in schema_sql.split(';'):
+            statement = statement.strip()
+            if statement:
+                cursor.execute(statement)
         conn.commit()
 
         # Also load web schema if it exists
-        web_schema_path = os.path.join(
-            os.path.dirname(__file__),
-            'schema_web.sql'
-        )
+        web_schema_path = os.path.join(os.path.dirname(__file__), 'schema_web.sql')
         if os.path.exists(web_schema_path):
             with open(web_schema_path, 'r', encoding='utf-8') as f:
                 web_schema_sql = f.read()
-            conn.executescript(web_schema_sql)
+            for statement in web_schema_sql.split(';'):
+                statement = statement.strip()
+                if statement:
+                    cursor.execute(statement)
             conn.commit()
             logger.info("Web schema initialized")
 
+        cursor.close()
         logger.info("Database schema initialized")
-    
+
     def close(self):
         """Close the database connection."""
-        if self._connection:
+        if self._connection and self._connection.open:
             self._connection.close()
             self._connection = None
             logger.info("Database connection closed")
@@ -186,37 +145,26 @@ class Database:
 _db_instance: Optional[Database] = None
 
 
-def get_database(db_path: Optional[str] = None) -> Database:
-    """
-    Get or create the global database instance.
-    
-    Args:
-        db_path: Path to database file (only used on first call)
-        
-    Returns:
-        Database instance
-    """
+def get_database() -> Database:
+    """Get or create the global database instance."""
     global _db_instance
-    
+
     if _db_instance is None:
         from config import get_config
         config = get_config()
-        path = db_path or config.db_path
-        _db_instance = Database(path)
-    
+        _db_instance = Database(
+            host=config.db_host,
+            user=config.db_user,
+            password=config.db_password,
+            database=config.db_name,
+            charset=config.db_charset,
+        )
+
     return _db_instance
 
 
-def init_db(db_path: Optional[str] = None) -> Database:
-    """
-    Initialize the database with schema.
-    
-    Args:
-        db_path: Path to database file
-        
-    Returns:
-        Initialized Database instance
-    """
-    db = get_database(db_path)
+def init_db() -> Database:
+    """Initialize the database with schema."""
+    db = get_database()
     db.init_schema()
     return db
