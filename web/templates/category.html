@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ sport_info.name }}{% endblock %}
+{% block meta_description %}Noticias de {{ sport_info.name }} en GoalFeed{% endblock %}
+
+{% block content %}
+<div class="gf-container gf-section">
+
+    <!-- Header -->
+    <div class="gf-category-header">
+        <h1 class="gf-category-header__title">{{ ICONS.get(sport, '') | safe }} {{ sport_info.name }}</h1>
+        <p class="gf-category-header__count">{{ total }} articulo{{ 's' if total != 1 else '' }} publicado{{ 's' if total != 1 else '' }}</p>
+    </div>
+
+    {% if articles %}
+
+    <!-- Hero article (first one) -->
+    {% set article = articles[0] %}
+    {% include "partials/article_card_hero.html" %}
+
+    <!-- Remaining articles -->
+    {% if articles | length > 1 %}
+    <div class="gf-grid gf-grid--3" style="margin-top: 20px;">
+        {% for article in articles[1:] %}
+        {% include "partials/article_card.html" %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="gf-pagination">
+        {% if page > 1 %}
+        <a href="/category/{{ sport }}?page={{ page - 1 }}" class="gf-pagination__btn">&laquo; Anterior</a>
+        {% endif %}
+
+        <span class="gf-pagination__current">{{ page }} / {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+        <a href="/category/{{ sport }}?page={{ page + 1 }}" class="gf-pagination__btn">Siguiente &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="gf-empty">
+        <p class="gf-empty__text">No hay articulos de {{ sport_info.name }} aun.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

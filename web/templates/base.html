@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GoalFeed{% endblock %} | Noticias Deportivas</title>
+
+    <meta name="description" content="{% block meta_description %}GoalFeed - Tu portal de noticias deportivas. Fútbol, NBA, Tenis y más.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}noticias deportivas, fútbol, NBA, tenis, fichajes, resultados{% endblock %}">
+    <meta name="theme-color" content="#f5f5f7">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}GoalFeed - Noticias Deportivas{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Tu portal de noticias deportivas.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ base_url }}/static/images/og-default.jpg{% endblock %}">
+    <meta property="og:url" content="{{ base_url }}{{ request.url.path }}">
+    <meta property="og:site_name" content="GoalFeed">
+
+    <!-- Prevent FOUC: apply theme before paint -->
+    <script>
+        (function() {
+            var t = localStorage.getItem('gf-theme');
+            if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', t);
+            var m = document.querySelector('meta[name="theme-color"]');
+            if (m) m.content = t === 'dark' ? '#1d1d1f' : '#f5f5f7';
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fffbeb', 100: '#fff3c4', 200: '#fce588',
+                            300: '#fbd24e', 400: '#ffcf25', 500: '#e6b800',
+                            600: '#b8920a', 700: '#926d00', 800: '#6b5000', 900: '#4a3800'
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+    {% include "partials/nav.html" %}
+
+    <main style="flex: 1;">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include "partials/footer.html" %}
+
+    <script src="/static/js/main.js"></script>
+    {% block scripts_extra %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,45 @@
+<div class="gf-live-card">
+    <!-- Match header -->
+    <div class="gf-live-header">
+        <span class="gf-live-header__league">{{ match.league_name }}</span>
+        <span class="gf-live-header__status">
+            {% if match.match_status in ['1H', '2H', 'ET', 'LIVE'] %}
+            <span class="gf-live-dot"></span>
+            <span class="gf-live-status--live">{{ match.current_minute }}'</span>
+            {% elif match.match_status == 'HT' %}
+            <span class="gf-live-status--ht">Descanso</span>
+            {% elif match.match_status in ['FT', 'AET'] %}
+            <span class="gf-live-status--ft">Final</span>
+            {% else %}
+            <span class="gf-live-status--ft">{{ match.match_status }}</span>
+            {% endif %}
+        </span>
+    </div>
+
+    <!-- Score -->
+    <div class="gf-live-score">
+        <div class="gf-live-score__inner">
+            <span class="gf-live-score__team gf-live-score__team--home">{{ match.home_team }}</span>
+            <span class="gf-live-score__result">{{ match.home_score }} - {{ match.away_score }}</span>
+            <span class="gf-live-score__team gf-live-score__team--away">{{ match.away_team }}</span>
+        </div>
+    </div>
+
+    <!-- Events timeline -->
+    {% if match.events %}
+    <div class="gf-live-events">
+        {% for event in match.events %}
+        <div class="gf-live-event">
+            <span class="gf-live-event__minute">{{ event.event_minute }}'</span>
+            <span class="gf-live-event__icon {% if event.event_type == 'goal' %}gf-live-event__icon--goal{% elif event.event_type == 'red_card' %}gf-live-event__icon--red{% elif event.event_type == 'var' %}gf-live-event__icon--var{% else %}gf-live-event__icon--default{% endif %}">
+                {% if event.event_type == 'goal' %}{{ ICONS.get('event_goal', '') | safe }}{% elif event.event_type == 'red_card' %}{{ ICONS.get('event_red_card', '') | safe }}{% elif event.event_type == 'penalty_miss' %}{{ ICONS.get('event_penalty_miss', '') | safe }}{% elif event.event_type == 'var' %}{{ ICONS.get('event_var', '') | safe }}{% else %}{{ ICONS.get('event_default', '') | safe }}{% endif %}
+            </span>
+            <span class="gf-live-event__player">{{ event.event_player or '' }}</span>
+            {% if event.event_detail %}
+            <span class="gf-live-event__detail">({{ event.event_detail }})</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>

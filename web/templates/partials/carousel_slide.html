@@ -1,0 +1,27 @@
+<a href="/article/{{ article.slug }}" class="gf-slide">
+    {% if article.image_url %}
+    <img class="gf-slide__img" src="{{ article.image_url }}" alt="{{ article.headline }}" loading="lazy">
+    {% elif article.image_filename %}
+    <img class="gf-slide__img" src="/static/images/articles/{{ article.image_filename }}" alt="{{ article.headline }}" loading="lazy">
+    {% else %}
+    <div class="gf-slide__img gf-slide__img--placeholder">
+        {{ ICONS.get(article.sport, ICONS.get('event_default', '')) | safe }}
+    </div>
+    {% endif %}
+    <div class="gf-slide__overlay"></div>
+    <div class="gf-slide__content">
+        {% set sport_info = SPORT_DISPLAY.get(article.sport, {}) %}
+        <span class="gf-slide__badge">
+            {{ ICONS.get(article.sport, '') | safe }}
+            {{ sport_info.get('name', article.sport) }}
+        </span>
+        <h3 class="gf-slide__title">{{ article.headline }}</h3>
+        {% if article.subtitle %}
+        <p class="gf-slide__sub">{{ article.subtitle }}</p>
+        {% endif %}
+        <div class="gf-slide__meta">
+            {% if article.source_name %}<span>{{ article.source_name }}</span>{% endif %}
+            {% if article.created_at %}<time>{{ article.created_at[:16].replace('T', ' ') }}</time>{% endif %}
+        </div>
+    </div>
+</a>

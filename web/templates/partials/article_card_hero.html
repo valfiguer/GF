@@ -1,0 +1,51 @@
+<a href="/article/{{ article.slug }}" class="gf-hero-card">
+    <!-- Image -->
+    <div class="gf-hero-card__image">
+        {% if article.image_url %}
+        <img src="{{ article.image_url }}" alt="{{ article.headline }}" loading="lazy">
+        {% elif article.image_filename %}
+        <img src="/static/images/articles/{{ article.image_filename }}" alt="{{ article.headline }}" loading="lazy">
+        {% else %}
+        <div class="gf-hero-card__image-placeholder">
+            {{ ICONS.get(article.sport, ICONS.get('event_default', '')) | safe }}
+        </div>
+        {% endif %}
+
+        <!-- Gradient overlay -->
+        <div class="gf-hero-card__overlay"></div>
+
+        <!-- Content on image -->
+        <div class="gf-hero-card__content">
+            <!-- Badges -->
+            <div class="gf-hero-card__badges">
+                {% set sport_info = SPORT_DISPLAY.get(article.sport, {}) %}
+                <span class="gf-badge gf-badge--sport">
+                    {{ ICONS.get(article.sport, '') | safe }}
+                    {{ sport_info.get('name', article.sport) }}
+                </span>
+
+                {% if article.status and article.status in STATUS_CONFIG %}
+                {% set status_info = STATUS_CONFIG[article.status] %}
+                <span class="gf-badge {% if article.status == 'CONFIRMADO' %}gf-badge--confirmed{% elif article.status == 'RUMOR' %}gf-badge--rumor{% else %}gf-badge--breaking{% endif %}">
+                    {{ ICONS.get(article.status, '') | safe }}
+                    {{ status_info.label }}
+                </span>
+                {% endif %}
+            </div>
+
+            <h2 class="gf-hero-card__title">{{ article.headline }}</h2>
+            {% if article.subtitle %}
+            <p class="gf-hero-card__subtitle">{{ article.subtitle }}</p>
+            {% endif %}
+
+            <div class="gf-hero-card__meta">
+                {% if article.source_name %}
+                <span>{{ article.source_name }}</span>
+                {% endif %}
+                {% if article.created_at %}
+                <time>{{ article.created_at[:16].replace('T', ' ') }}</time>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</a>

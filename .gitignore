@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Environment
+.env
+
+# Data & logs (keep structure, ignore contents)
+data/goalfeed.db
+data/goalfeed.db-shm
+data/goalfeed.db-wal
+logs/app.log
+
+# OS
+.DS_Store
+Thumbs.db

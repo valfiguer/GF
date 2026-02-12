@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}En Vivo{% endblock %}
+{% block meta_description %}Partidos en vivo - Marcadores y eventos en tiempo real{% endblock %}
+
+{% block content %}
+<div class="gf-container gf-container--wide gf-section">
+
+    <!-- Header -->
+    <div class="gf-live-header-page">
+        <span class="gf-live-dot gf-live-dot--lg"></span>
+        <h1 class="gf-live-header-page__title">En Vivo</h1>
+        <span class="gf-live-header-page__time" id="live-update-time">Actualizado ahora</span>
+    </div>
+
+    <div id="live-matches-container">
+        {% if matches %}
+        <div class="gf-live-list">
+            {% for match in matches %}
+            {% include "partials/live_match_card.html" %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="gf-empty" id="no-matches-msg">
+            <p class="gf-empty__text">No hay partidos en vivo en este momento.</p>
+            <p class="gf-empty__subtext">Esta página se actualiza automáticamente.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="/static/js/live.js"></script>
+{% endblock %}
