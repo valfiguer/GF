@@ -14,6 +14,10 @@ data/goalfeed.db-shm
 data/goalfeed.db-wal
 logs/app.log
 
+# Generated article images (created by Python pipeline)
+web/static/images/articles/
+public_html/static/images/articles/
+
 # OS
 .DS_Store
 Thumbs.db
