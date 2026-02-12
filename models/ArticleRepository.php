@@ -73,4 +73,48 @@ class ArticleRepository {
             [$slug]
         );
     }
+
+    // ── League / Team queries ──
+
+    public static function getByLeague(string $leagueSlug, int $page = 1, int $perPage = 12): array {
+        $offset = ($page - 1) * $perPage;
+        return Database::fetchAll(
+            "SELECT DISTINCT wa.* FROM web_articles wa
+             JOIN article_teams at2 ON at2.web_article_id = wa.id
+             WHERE wa.is_published = 1 AND at2.league_slug = ?
+             ORDER BY wa.created_at DESC LIMIT ? OFFSET ?",
+            [$leagueSlug, $perPage, $offset]
+        );
+    }
+
+    public static function getCountByLeague(string $leagueSlug): int {
+        $row = Database::fetchOne(
+            "SELECT COUNT(DISTINCT wa.id) as count FROM web_articles wa
+             JOIN article_teams at2 ON at2.web_article_id = wa.id
+             WHERE wa.is_published = 1 AND at2.league_slug = ?",
+            [$leagueSlug]
+        );
+        return $row ? (int)$row['count'] : 0;
+    }
+
+    public static function getByTeam(string $teamSlug, int $page = 1, int $perPage = 12): array {
+        $offset = ($page - 1) * $perPage;
+        return Database::fetchAll(
+            "SELECT DISTINCT wa.* FROM web_articles wa
+             JOIN article_teams at2 ON at2.web_article_id = wa.id
+             WHERE wa.is_published = 1 AND at2.team_slug = ?
+             ORDER BY wa.created_at DESC LIMIT ? OFFSET ?",
+            [$teamSlug, $perPage, $offset]
+        );
+    }
+
+    public static function getCountByTeam(string $teamSlug): int {
+        $row = Database::fetchOne(
+            "SELECT COUNT(DISTINCT wa.id) as count FROM web_articles wa
+             JOIN article_teams at2 ON at2.web_article_id = wa.id
+             WHERE wa.is_published = 1 AND at2.team_slug = ?",
+            [$teamSlug]
+        );
+        return $row ? (int)$row['count'] : 0;
+    }
 }

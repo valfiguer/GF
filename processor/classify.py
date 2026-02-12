@@ -6,7 +6,10 @@ import logging
 from typing import Optional, Tuple
 import re
 
-from config import SPORT_KEYWORDS, CATEGORY_KEYWORDS, OFFICIAL_DOMAINS
+from config import (
+    SPORT_KEYWORDS, CATEGORY_KEYWORDS, OFFICIAL_DOMAINS,
+    TEAM_ALIASES, TEAM_LEAGUE_MEMBERSHIP, LEAGUE_KEYWORDS,
+)
 from processor.normalize import NormalizedItem
 
 logger = logging.getLogger(__name__)
@@ -156,6 +159,77 @@ def determine_status(item: NormalizedItem) -> str:
     return "RUMOR"
 
 
+def _detect_league_context(text: str) -> Optional[str]:
+    """Detect which league is being discussed based on keywords."""
+    text_lower = text.lower()
+    league_scores = {}
+    for league_slug, keywords in LEAGUE_KEYWORDS.items():
+        score = 0
+        for kw in keywords:
+            pattern = r'\b' + re.escape(kw.lower()) + r'\b'
+            score += len(re.findall(pattern, text_lower))
+        if score > 0:
+            league_scores[league_slug] = score
+    if league_scores:
+        return max(league_scores, key=league_scores.get)
+    return None
+
+
+def classify_teams(item: NormalizedItem) -> list:
+    """
+    Classify which teams are mentioned in an article.
+
+    Uses word-boundary matching on aliases. Headline matches get 3x weight.
+    For multi-league teams, league context keywords disambiguate.
+
+    Returns:
+        List of dicts: [{team_slug, league_slug, score}, ...] sorted by score desc.
+    """
+    title = item.title.lower()
+    body = ((item.summary or "") + " " + " ".join(item.categories)).lower()
+    full_text = title + " " + body
+
+    # Detect league context once
+    league_context = _detect_league_context(full_text)
+
+    results = {}  # key: (team_slug, league_slug) -> score
+
+    for team_slug, info in TEAM_ALIASES.items():
+        primary_league = info["league"]
+        aliases = info["aliases"]
+
+        score = 0
+        for alias in aliases:
+            pattern = r'\b' + re.escape(alias.lower()) + r'\b'
+            title_hits = len(re.findall(pattern, title))
+            body_hits = len(re.findall(pattern, body))
+            score += title_hits * 3 + body_hits
+
+        if score < 2:
+            continue
+
+        # Determine league(s) for this team
+        memberships = TEAM_LEAGUE_MEMBERSHIP.get(team_slug)
+        if memberships:
+            if league_context and league_context in memberships:
+                results[(team_slug, league_context)] = score
+            else:
+                # Default to primary league
+                results[(team_slug, primary_league)] = score
+        else:
+            results[(team_slug, primary_league)] = score
+
+    # Sort by score descending
+    sorted_results = sorted(
+        [{"team_slug": k[0], "league_slug": k[1], "score": v}
+         for k, v in results.items()],
+        key=lambda x: x["score"],
+        reverse=True,
+    )
+
+    return sorted_results
+
+
 def classify_item(item: NormalizedItem) -> NormalizedItem:
     """
     Fully classify an item (sport, category, status).
@@ -169,10 +243,12 @@ def classify_item(item: NormalizedItem) -> NormalizedItem:
     item.sport = classify_sport(item)
     item.category = classify_category(item)
     item.status = determine_status(item)
-    
+    item.teams = classify_teams(item)
+
     logger.debug(
         f"Classified: '{item.title[:40]}...' -> "
-        f"sport={item.sport}, category={item.category}, status={item.status}"
+        f"sport={item.sport}, category={item.category}, status={item.status}, "
+        f"teams={len(item.teams)}"
     )
     
     return item

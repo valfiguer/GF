@@ -59,6 +59,25 @@ $TRANSLATIONS = [
         'en' => 'No {sport} articles yet.',
     ],
 
+    // ── Leagues & Teams ──
+    'nav.leagues' => ['es' => 'Ligas', 'en' => 'Leagues'],
+    'league.articles_count' => [
+        'es' => '{count} artículo{s} publicado{s}',
+        'en' => '{count} published article{s}',
+    ],
+    'league.empty' => [
+        'es' => 'No hay artículos de esta liga aún.',
+        'en' => 'No articles for this league yet.',
+    ],
+    'team.articles_count' => [
+        'es' => '{count} artículo{s} publicado{s}',
+        'en' => '{count} published article{s}',
+    ],
+    'team.empty' => [
+        'es' => 'No hay artículos de este equipo aún.',
+        'en' => 'No articles for this team yet.',
+    ],
+
     // ── Live ──
     'live.title'      => ['es' => 'En Vivo',             'en' => 'Live'],
     'live.updated'    => ['es' => 'Actualizado ahora',   'en' => 'Updated now'],

@@ -74,6 +74,18 @@ $scriptsExtra = $scriptsExtra ?? '';
 
     <?php View::partial('nav', compact('lang', 'currentUser', 'requestPath')); ?>
 
+    <?php View::partial('league_nav', compact('lang', 'requestPath')); ?>
+    <?php
+    if (preg_match('#^/league/([a-z]+)#', $requestPath, $_lm)) {
+        $currentLeague = $_lm[1];
+        $currentTeam = null;
+        if (preg_match('#^/league/[a-z]+/([a-z]+)#', $requestPath, $_tm))
+            $currentTeam = $_tm[1];
+        if (isset(LEAGUES[$currentLeague]))
+            View::partial('team_nav', compact('lang', 'currentLeague', 'currentTeam'));
+    }
+    ?>
+
     <main style="flex: 1;">
         <?= $content ?>
     </main>

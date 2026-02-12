@@ -144,6 +144,16 @@ def create_web_article_from_item(item) -> Optional[int]:
     try:
         web_id = repo.insert_web_article(web_article)
         logger.info(f"Created web article: {slug} (id={web_id})")
+
+        # Save team associations
+        teams = getattr(item, 'teams', None)
+        if teams and web_id:
+            try:
+                repo.insert_article_teams(web_id, teams)
+                logger.debug(f"Saved {len(teams)} team tags for web_id={web_id}")
+            except Exception as te:
+                logger.warning(f"Error saving team tags: {te}")
+
         return web_id
     except Exception as e:
         logger.error(f"Error inserting web article: {e}")

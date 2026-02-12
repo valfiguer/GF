@@ -1010,6 +1010,41 @@ class Repository:
             )
         return row['count'] if row else 0
 
+    def insert_article_teams(self, web_article_id: int, teams_list: List[Dict]):
+        """
+        Insert team associations for a web article.
+
+        Args:
+            web_article_id: The web_articles.id
+            teams_list: List of dicts with team_slug, league_slug, score
+        """
+        if not teams_list:
+            return
+
+        for i, team in enumerate(teams_list):
+            is_primary = 1 if i == 0 else 0
+            try:
+                self.db.execute(
+                    """INSERT INTO article_teams
+                       (web_article_id, league_slug, team_slug, is_primary)
+                       VALUES (%s, %s, %s, %s)""",
+                    (web_article_id, team["league_slug"], team["team_slug"], is_primary)
+                )
+            except Exception as e:
+                logger.warning(f"Error inserting article_team: {e}")
+
+        # Also update denormalized columns on web_articles
+        primary = teams_list[0]
+        try:
+            self.db.execute(
+                """UPDATE web_articles
+                   SET primary_league = %s, primary_team = %s
+                   WHERE id = %s""",
+                (primary["league_slug"], primary["team_slug"], web_article_id)
+            )
+        except Exception as e:
+            logger.warning(f"Error updating primary league/team: {e}")
+
     def get_related_web_articles(self, sport: str, exclude_slug: str, limit: int = 4) -> List[Dict]:
         """Get related web articles by sport, excluding current."""
         rows = self.db.fetchall(

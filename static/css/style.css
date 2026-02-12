@@ -1980,3 +1980,170 @@ img {
     color: var(--color-text-primary);
     font-weight: 500;
 }
+
+/* =============================
+   League & Team Sub-Navbars
+   ============================= */
+
+/* League nav — sticky below main nav */
+.gf-league-nav {
+    position: sticky;
+    top: 52px;
+    z-index: 90;
+    background: var(--color-bg-primary);
+    border-bottom: 0.5px solid var(--color-separator);
+    height: 40px;
+    transition: background-color 0.3s ease;
+}
+
+.gf-league-nav .gf-container {
+    height: 100%;
+}
+
+.gf-league-nav__scroll {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.gf-league-nav__scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.gf-league-nav__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.gf-league-nav__item:hover {
+    color: var(--color-text-primary);
+    background: var(--color-bg-tertiary);
+}
+
+.gf-league-nav__item--active {
+    background: var(--color-accent-bg);
+    color: var(--color-accent-text);
+    font-weight: 600;
+}
+
+.gf-league-nav__item--active:hover {
+    background: var(--color-accent-bg-hover);
+    color: var(--color-accent-text);
+}
+
+.gf-league-nav__logo {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* Team nav — sticky below league nav */
+.gf-team-nav {
+    position: sticky;
+    top: 92px;
+    z-index: 85;
+    background: var(--color-bg-secondary);
+    border-bottom: 0.5px solid var(--color-separator);
+    height: 44px;
+    transition: background-color 0.3s ease;
+}
+
+.gf-team-nav .gf-container {
+    height: 100%;
+}
+
+.gf-team-nav__scroll {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.gf-team-nav__scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.gf-team-nav__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.gf-team-nav__item:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.gf-team-nav__item--active {
+    background: var(--color-accent-bg);
+}
+
+.gf-team-nav__item--active:hover {
+    background: var(--color-accent-bg-hover);
+}
+
+.gf-team-nav__logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.gf-team-nav__name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    line-height: 1;
+}
+
+.gf-team-nav__item--active .gf-team-nav__name {
+    color: var(--color-accent-text);
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 639px) {
+    .gf-league-nav__item {
+        padding: 4px 10px;
+        font-size: 12px;
+        gap: 4px;
+    }
+    .gf-league-nav__logo {
+        width: 16px;
+        height: 16px;
+    }
+    .gf-team-nav__item {
+        padding: 3px 8px;
+        gap: 4px;
+    }
+    .gf-team-nav__logo {
+        width: 20px;
+        height: 20px;
+    }
+    .gf-team-nav__name {
+        font-size: 11px;
+    }
+}

@@ -310,7 +310,277 @@ class Config:
                 sport_hint="football_eu",
                 weight=22
             ),
+
+            # ===============================
+            # POR EQUIPO — MARCA / AS
+            # ===============================
+            RSSSource(
+                name="Marca Real Madrid",
+                url="https://e00-marca.uecdn.es/rss/futbol/real-madrid.xml",
+                sport_hint="football_eu",
+                weight=20
+            ),
+            RSSSource(
+                name="Marca Barcelona",
+                url="https://e00-marca.uecdn.es/rss/futbol/barcelona.xml",
+                sport_hint="football_eu",
+                weight=20
+            ),
+            RSSSource(
+                name="Marca Atlético",
+                url="https://e00-marca.uecdn.es/rss/futbol/atletico-de-madrid.xml",
+                sport_hint="football_eu",
+                weight=20
+            ),
+            RSSSource(
+                name="AS Real Madrid",
+                url="https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/real-madrid/portada/",
+                sport_hint="football_eu",
+                weight=20
+            ),
+            RSSSource(
+                name="AS Barcelona",
+                url="https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/barcelona/portada/",
+                sport_hint="football_eu",
+                weight=20
+            ),
+            RSSSource(
+                name="AS Atlético",
+                url="https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/atletico-de-madrid/portada/",
+                sport_hint="football_eu",
+                weight=20
+            ),
+
+            # ===============================
+            # POR LIGA — CHAMPIONS / SERIE A / PREMIER
+            # ===============================
+            RSSSource(
+                name="Marca Champions League",
+                url="https://e00-marca.uecdn.es/rss/futbol/champions-league.xml",
+                sport_hint="football_eu",
+                weight=21
+            ),
+            RSSSource(
+                name="AS Champions League",
+                url="https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/champions-league/portada/",
+                sport_hint="football_eu",
+                weight=21
+            ),
+            RSSSource(
+                name="UEFA.com News",
+                url="https://www.uefa.com/rss/news.xml",
+                sport_hint="football_eu",
+                weight=19
+            ),
+            RSSSource(
+                name="Marca Serie A",
+                url="https://e00-marca.uecdn.es/rss/futbol/liga-italiana.xml",
+                sport_hint="football_eu",
+                weight=18
+            ),
+            RSSSource(
+                name="Marca Premier League",
+                url="https://e00-marca.uecdn.es/rss/futbol/premier-league.xml",
+                sport_hint="football_eu",
+                weight=18
+            ),
+            RSSSource(
+                name="BBC Sport Premier League",
+                url="https://feeds.bbci.co.uk/sport/football/premier-league/rss.xml",
+                sport_hint="football_eu",
+                weight=22
+            ),
+            RSSSource(
+                name="Sky Sports Premier League",
+                url="https://www.skysports.com/rss/12040",
+                sport_hint="football_eu",
+                weight=20
+            ),
+            RSSSource(
+                name="The Guardian Premier League",
+                url="https://www.theguardian.com/football/premierleague/rss",
+                sport_hint="football_eu",
+                weight=21
+            ),
+
+            # ===============================
+            # POR EQUIPO PL — BBC
+            # ===============================
+            RSSSource(
+                name="BBC Arsenal",
+                url="https://feeds.bbci.co.uk/sport/football/teams/arsenal/rss.xml",
+                sport_hint="football_eu",
+                weight=19
+            ),
+            RSSSource(
+                name="BBC Chelsea",
+                url="https://feeds.bbci.co.uk/sport/football/teams/chelsea/rss.xml",
+                sport_hint="football_eu",
+                weight=19
+            ),
+            RSSSource(
+                name="BBC Liverpool",
+                url="https://feeds.bbci.co.uk/sport/football/teams/liverpool/rss.xml",
+                sport_hint="football_eu",
+                weight=19
+            ),
+            RSSSource(
+                name="BBC Man City",
+                url="https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml",
+                sport_hint="football_eu",
+                weight=19
+            ),
+            RSSSource(
+                name="BBC Man United",
+                url="https://feeds.bbci.co.uk/sport/football/teams/manchester-united/rss.xml",
+                sport_hint="football_eu",
+                weight=19
+            ),
+            RSSSource(
+                name="BBC Tottenham",
+                url="https://feeds.bbci.co.uk/sport/football/teams/tottenham-hotspur/rss.xml",
+                sport_hint="football_eu",
+                weight=19
+            ),
+            RSSSource(
+                name="BBC Newcastle",
+                url="https://feeds.bbci.co.uk/sport/football/teams/newcastle-united/rss.xml",
+                sport_hint="football_eu",
+                weight=18
+            ),
+            RSSSource(
+                name="BBC Aston Villa",
+                url="https://feeds.bbci.co.uk/sport/football/teams/aston-villa/rss.xml",
+                sport_hint="football_eu",
+                weight=18
+            ),
         ]
+
+
+
+# ── Team aliases for classification ──
+# {team_slug: {league: primary_league, aliases: [keywords in ES+EN+nicknames]}}
+TEAM_ALIASES = {
+    # La Liga
+    "barcelona": {"league": "laliga", "aliases": ["barcelona", "barça", "barca", "blaugrana", "culé", "culers", "fcb", "fc barcelona"]},
+    "realmadrid": {"league": "laliga", "aliases": ["real madrid", "madrid", "madridista", "merengues", "blancos", "rmcf", "los blancos"]},
+    "atlmadrid": {"league": "laliga", "aliases": ["atletico madrid", "atlético madrid", "atletico de madrid", "atlético de madrid", "atl. madrid", "atleti", "colchoneros", "rojiblanco"]},
+    "sevilla": {"league": "laliga", "aliases": ["sevilla", "sevilla fc", "nervionenses", "sevillismo"]},
+    "betis": {"league": "laliga", "aliases": ["betis", "real betis", "verdiblanco", "béticos", "beticos"]},
+    "realsociedad": {"league": "laliga", "aliases": ["real sociedad", "la real", "txuri-urdin", "txuri urdin", "donostiarra"]},
+    "villarreal": {"league": "laliga", "aliases": ["villarreal", "submarino amarillo", "yellow submarine", "groguet"]},
+    "athletic": {"league": "laliga", "aliases": ["athletic", "athletic club", "athletic bilbao", "athletic de bilbao", "leones", "los leones", "zurigorri"]},
+    "valencia": {"league": "laliga", "aliases": ["valencia cf", "valencia", "che", "los che", "murciélagos"]},
+    "celta": {"league": "laliga", "aliases": ["celta", "celta de vigo", "celta vigo", "celtiñas", "celestes"]},
+    "osasuna": {"league": "laliga", "aliases": ["osasuna", "ca osasuna", "rojillos", "los rojillos"]},
+    "mallorca": {"league": "laliga", "aliases": ["mallorca", "rcd mallorca", "bermellones"]},
+    "getafe": {"league": "laliga", "aliases": ["getafe", "getafe cf", "azulones"]},
+    "girona": {"league": "laliga", "aliases": ["girona", "girona fc"]},
+    "espanyol": {"league": "laliga", "aliases": ["espanyol", "rcd espanyol", "periquitos", "pericos"]},
+    "rayovallecano": {"league": "laliga", "aliases": ["rayo vallecano", "rayo", "franjirrojos", "vallecanos"]},
+    "alaves": {"league": "laliga", "aliases": ["alavés", "alaves", "deportivo alavés", "deportivo alaves", "babazorro"]},
+    "levante": {"league": "laliga", "aliases": ["levante", "levante ud", "granotas"]},
+    "elche": {"league": "laliga", "aliases": ["elche", "elche cf", "franjiverdes"]},
+    "realoviedo": {"league": "laliga", "aliases": ["real oviedo", "oviedo", "carbayones", "azules"]},
+    # Champions League (non-Spanish teams)
+    "bayernmunchen": {"league": "champions", "aliases": ["bayern", "bayern munich", "bayern münchen", "bayern munchen", "fc bayern", "bavarians"]},
+    "manchestercity": {"league": "premierleague", "aliases": ["manchester city", "man city", "city", "citizens", "cityzens", "mcfc"]},
+    "liverpool": {"league": "premierleague", "aliases": ["liverpool", "reds", "lfc", "liverpool fc", "the reds", "anfield"]},
+    "arsenal": {"league": "premierleague", "aliases": ["arsenal", "gunners", "the gunners", "afc", "arsenal fc"]},
+    "chelsea": {"league": "premierleague", "aliases": ["chelsea", "blues", "the blues", "cfc", "chelsea fc"]},
+    "psg": {"league": "champions", "aliases": ["psg", "paris saint-germain", "paris saint germain", "paris sg", "parisinos"]},
+    "inter": {"league": "seriea", "aliases": ["inter", "inter milan", "inter de milán", "inter de milan", "internazionale", "nerazzurri"]},
+    "juventus": {"league": "seriea", "aliases": ["juventus", "juve", "la vecchia signora", "bianconeri", "la juve"]},
+    "napoli": {"league": "seriea", "aliases": ["napoli", "nápoles", "ssc napoli", "partenopei", "azzurri napoli"]},
+    "borussiadortmund": {"league": "champions", "aliases": ["borussia dortmund", "dortmund", "bvb", "die borussen"]},
+    "bayerleverkusen": {"league": "champions", "aliases": ["bayer leverkusen", "leverkusen", "werkself", "bayer 04"]},
+    "benfica": {"league": "champions", "aliases": ["benfica", "sl benfica", "águias", "encarnados"]},
+    "sporting": {"league": "champions", "aliases": ["sporting", "sporting cp", "sporting lisboa", "leões"]},
+    "ajax": {"league": "champions", "aliases": ["ajax", "ajax amsterdam", "godenzonen", "afc ajax"]},
+    "psv": {"league": "champions", "aliases": ["psv", "psv eindhoven"]},
+    "tottenham": {"league": "premierleague", "aliases": ["tottenham", "spurs", "tottenham hotspur", "thfc"]},
+    "newcastle": {"league": "premierleague", "aliases": ["newcastle", "newcastle united", "magpies", "toon", "nufc"]},
+    "atalanta": {"league": "seriea", "aliases": ["atalanta", "atalanta bergamo", "la dea", "orobici"]},
+    "galatasaray": {"league": "champions", "aliases": ["galatasaray", "gala", "cim bom"]},
+    "clubbrujas": {"league": "champions", "aliases": ["club brujas", "club brugge", "bruges"]},
+    "milan": {"league": "seriea", "aliases": ["ac milan", "milan", "rossoneri", "diavolo", "il milan"]},
+    # Serie A (remaining)
+    "roma": {"league": "seriea", "aliases": ["roma", "as roma", "giallorossi", "la loba", "romanisti"]},
+    "lazio": {"league": "seriea", "aliases": ["lazio", "ss lazio", "biancocelesti", "aquilotti"]},
+    "fiorentina": {"league": "seriea", "aliases": ["fiorentina", "acf fiorentina", "viola", "la viola", "gigliati"]},
+    "torino": {"league": "seriea", "aliases": ["torino", "torino fc", "toro", "granata"]},
+    "bologna": {"league": "seriea", "aliases": ["bologna", "bologna fc", "rossoblu"]},
+    "udinese": {"league": "seriea", "aliases": ["udinese", "udinese calcio", "bianconeri friulani"]},
+    "genoa": {"league": "seriea", "aliases": ["genoa", "genoa cfc", "grifone"]},
+    "cagliari": {"league": "seriea", "aliases": ["cagliari", "cagliari calcio", "rossoblu sardi"]},
+    "lecce": {"league": "seriea", "aliases": ["lecce", "us lecce", "salentini", "giallorossi lecce"]},
+    "parma": {"league": "seriea", "aliases": ["parma", "parma calcio", "ducali", "crociati"]},
+    "hellasverona": {"league": "seriea", "aliases": ["hellas verona", "verona", "mastini", "gialloblu"]},
+    "como": {"league": "seriea", "aliases": ["como", "como 1907", "lariani"]},
+    "sassuolo": {"league": "seriea", "aliases": ["sassuolo", "us sassuolo", "neroverdi"]},
+    "pisa": {"league": "seriea", "aliases": ["pisa", "pisa sc", "nerazzurri pisa"]},
+    "cremonese": {"league": "seriea", "aliases": ["cremonese", "us cremonese", "grigiorossi"]},
+    # Premier League (remaining)
+    "manchesterunited": {"league": "premierleague", "aliases": ["manchester united", "man united", "man utd", "red devils", "mufc", "united"]},
+    "astonvilla": {"league": "premierleague", "aliases": ["aston villa", "villa", "villans", "avfc"]},
+    "brighton": {"league": "premierleague", "aliases": ["brighton", "brighton & hove albion", "brighton and hove", "seagulls", "bhafc"]},
+    "westham": {"league": "premierleague", "aliases": ["west ham", "west ham united", "hammers", "irons", "whufc"]},
+    "crystalpalace": {"league": "premierleague", "aliases": ["crystal palace", "palace", "eagles", "cpfc"]},
+    "bournemouth": {"league": "premierleague", "aliases": ["bournemouth", "afc bournemouth", "cherries"]},
+    "fulham": {"league": "premierleague", "aliases": ["fulham", "fulham fc", "cottagers"]},
+    "wolverhampton": {"league": "premierleague", "aliases": ["wolverhampton", "wolves", "wolverhampton wanderers", "wwfc"]},
+    "everton": {"league": "premierleague", "aliases": ["everton", "toffees", "efc", "everton fc"]},
+    "brentford": {"league": "premierleague", "aliases": ["brentford", "brentford fc", "bees"]},
+    "nottinghamforest": {"league": "premierleague", "aliases": ["nottingham forest", "forest", "nffc", "tricky trees"]},
+    "leicester": {"league": "premierleague", "aliases": ["leicester", "leicester city", "foxes", "lcfc"]},
+    "ipswich": {"league": "premierleague", "aliases": ["ipswich", "ipswich town", "tractor boys", "itfc"]},
+    "southampton": {"league": "premierleague", "aliases": ["southampton", "saints", "soton", "sfc"]},
+}
+
+
+# Teams that belong to multiple leagues
+TEAM_LEAGUE_MEMBERSHIP = {
+    "barcelona": ["laliga", "champions"],
+    "realmadrid": ["laliga", "champions"],
+    "atlmadrid": ["laliga", "champions"],
+    "villarreal": ["laliga", "champions"],
+    "athletic": ["laliga", "champions"],
+    "manchestercity": ["premierleague", "champions"],
+    "liverpool": ["premierleague", "champions"],
+    "arsenal": ["premierleague", "champions"],
+    "chelsea": ["premierleague", "champions"],
+    "tottenham": ["premierleague", "champions"],
+    "newcastle": ["premierleague", "champions"],
+    "inter": ["seriea", "champions"],
+    "juventus": ["seriea", "champions"],
+    "napoli": ["seriea", "champions"],
+    "atalanta": ["seriea", "champions"],
+    "milan": ["seriea", "champions"],
+}
+
+
+# Keywords that signal a specific league context
+LEAGUE_KEYWORDS = {
+    "laliga": [
+        "laliga", "la liga", "liga española", "liga espanola", "primera división",
+        "primera division", "liga santander", "liga ea sports", "jornada",
+    ],
+    "champions": [
+        "champions league", "champions", "ucl", "uefa champions",
+        "champions league draw", "sorteo champions", "fase de grupos champions",
+        "octavos champions", "cuartos champions", "semifinal champions",
+        "final champions", "orejona",
+    ],
+    "seriea": [
+        "serie a", "calcio", "scudetto", "seria a", "liga italiana",
+        "campeonato italiano",
+    ],
+    "premierleague": [
+        "premier league", "premier", "epl", "liga inglesa",
+        "english premier", "premiership", "fa cup", "carabao cup",
+        "league cup",
+    ],
+}
 
 
 # Global config instance

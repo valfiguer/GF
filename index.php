@@ -29,6 +29,7 @@ require __DIR__ . '/controllers/ApiController.php';
 require __DIR__ . '/controllers/AuthController.php';
 require __DIR__ . '/controllers/SitemapController.php';
 require __DIR__ . '/controllers/LangController.php';
+require __DIR__ . '/controllers/LeagueController.php';
 require __DIR__ . '/controllers/LegalController.php';
 
 // ── Init view engine ──
@@ -42,6 +43,8 @@ $router->get('/',                        ['HomeController',     'index']);
 $router->get('/article/([a-zA-Z0-9_-]+)', ['ArticleController', 'show']);
 $router->get('/category/([a-zA-Z0-9_]+)', ['CategoryController','show']);
 $router->get('/live',                    ['LiveController',     'index']);
+$router->get('/league/([a-z]+)/([a-z]+)', ['LeagueController',  'team']);
+$router->get('/league/([a-z]+)',          ['LeagueController',  'show']);
 
 // API
 $router->get('/api/articles',            ['ApiController',      'articles']);

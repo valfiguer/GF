@@ -57,6 +57,9 @@ class NormalizedItem:
         self.category: Optional[str] = None
         self.status: str = "RUMOR"
         
+        # This will be filled by classifier (team tagging)
+        self.teams: list = []
+
         # This will be filled by ranker
         self.score: int = 0
     
