@@ -74,9 +74,7 @@ $router->get('/terms',                 ['LegalController',     'terms']);
 $router->get('/set-lang/(es|en)',       ['LangController',      'setLang']);
 
 // One-time migration (delete after use)
-$router->get('/run-migration-gf2026',   function() {
-    require __DIR__ . '/migrate_and_backfill.php';
-});
+$router->get('/run-migration-gf2026',   ['HomeController', 'runMigration']);
 
 // ── Dispatch ──
 if (!$router->dispatch()) {
