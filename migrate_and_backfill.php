@@ -7,16 +7,19 @@
  * Delete after use.
  */
 
-// Simple auth guard — change this key
+// Auth: secret URL or query key
 $SECRET = 'gf_migrate_2026';
-if (($_GET['key'] ?? '') !== $SECRET) {
+$isRouter = defined('BASE_URL'); // loaded from index.php
+if (!$isRouter && ($_GET['key'] ?? '') !== $SECRET) {
     http_response_code(403);
     die('Forbidden');
 }
 
 header('Content-Type: text/plain; charset=utf-8');
 
-require __DIR__ . '/config.php';
+if (!$isRouter) {
+    require __DIR__ . '/config.php';
+}
 
 // Connect to DB
 $dsn = 'mysql:host=' . ($_ENV['DB_HOST'] ?? 'localhost')
