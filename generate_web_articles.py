@@ -40,6 +40,21 @@ def main():
         logger.error("Web portal is not enabled in config. Set web.enabled = true.")
         sys.exit(1)
 
+    # 0. Sync sources from config into DB (add new, deactivate removed)
+    logger.info("Syncing RSS sources from config...")
+    config_sources = [
+        {"name": s.name, "url": s.url, "sport_hint": s.sport_hint, "weight": s.weight}
+        for s in config.rss_sources
+    ]
+    repo.seed_sources(config_sources)
+    # Deactivate sources no longer in config
+    config_urls = {s.url for s in config.rss_sources}
+    all_db_sources = repo.get_sources(active_only=False)
+    for s in all_db_sources:
+        if s['url'] not in config_urls and s.get('active', 1):
+            repo.deactivate_source(s['id'])
+            logger.info(f"Deactivated source: {s['name']}")
+
     # 1. Collect from RSS
     logger.info("Collecting from RSS feeds...")
     db_sources = repo.get_sources(active_only=True)

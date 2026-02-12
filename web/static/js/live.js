@@ -1,6 +1,7 @@
 // GoalFeed Live — Auto-refresh for /live page
 
 (function () {
+    var I18N = window.GF_I18N || {};
     var REFRESH_INTERVAL = 30000; // 30 seconds
     var timeEl = document.getElementById('live-update-time');
 
@@ -30,14 +31,15 @@
             .then(function (data) {
                 if (timeEl) {
                     var now = new Date();
-                    timeEl.textContent = 'Actualizado ' + now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                    var locale = (window.GF_LANG === 'en') ? 'en-GB' : 'es-ES';
+                    timeEl.textContent = (I18N['updated'] || 'Actualizado') + ' ' + now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
                 }
 
                 var container = document.getElementById('live-matches-container');
                 if (!container) return;
 
                 if (!data.matches || data.matches.length === 0) {
-                    container.innerHTML = '<div class="gf-empty"><p class="gf-empty__text">No hay partidos en vivo en este momento.</p></div>';
+                    container.innerHTML = '<div class="gf-empty"><p class="gf-empty__text">' + escapeHtml(I18N['no_live'] || 'No hay partidos en vivo en este momento.') + '</p></div>';
                     return;
                 }
 
@@ -59,9 +61,9 @@
             statusHtml = '<span class="gf-live-dot"></span>' +
                 '<span class="gf-live-status--live">' + escapeHtml(match.current_minute || '') + "'" + '</span>';
         } else if (match.match_status === 'HT') {
-            statusHtml = '<span class="gf-live-status--ht">Descanso</span>';
+            statusHtml = '<span class="gf-live-status--ht">' + escapeHtml(I18N['halftime'] || 'Descanso') + '</span>';
         } else if (['FT', 'AET'].indexOf(match.match_status) !== -1) {
-            statusHtml = '<span class="gf-live-status--ft">Final</span>';
+            statusHtml = '<span class="gf-live-status--ft">' + escapeHtml(I18N['fulltime'] || 'Final') + '</span>';
         } else {
             statusHtml = '<span class="gf-live-status--ft">' + escapeHtml(match.match_status || '') + '</span>';
         }

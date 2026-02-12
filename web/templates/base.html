@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+{% set lang = get_lang(request) %}
+<html lang="{{ lang }}" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}GoalFeed{% endblock %} | Noticias Deportivas</title>
+    <title>{% block title %}GoalFeed{% endblock %} | {{ t("meta.subtitle", lang) }}</title>
 
-    <meta name="description" content="{% block meta_description %}GoalFeed - Tu portal de noticias deportivas. Fútbol, NBA, Tenis y más.{% endblock %}">
-    <meta name="keywords" content="{% block meta_keywords %}noticias deportivas, fútbol, NBA, tenis, fichajes, resultados{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{{ t("meta.description", lang) }}{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}noticias deportivas, fútbol, football, fichajes, resultados{% endblock %}">
     <meta name="theme-color" content="#f5f5f7">
 
     <!-- Open Graph -->
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:title" content="{% block og_title %}GoalFeed - Noticias Deportivas{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Tu portal de noticias deportivas.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{{ t("meta.og_title", lang) }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ t("meta.og_description", lang) }}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{{ base_url }}/static/images/og-default.jpg{% endblock %}">
     <meta property="og:url" content="{{ base_url }}{{ request.url.path }}">
     <meta property="og:site_name" content="GoalFeed">
@@ -67,6 +68,7 @@
 
     {% include "partials/footer.html" %}
 
+    <script>window.GF_LANG = "{{ lang }}"; window.GF_I18N = {{ get_js_translations(lang) | tojson }};</script>
     <script src="/static/js/main.js"></script>
     {% block scripts_extra %}{% endblock %}
 </body>

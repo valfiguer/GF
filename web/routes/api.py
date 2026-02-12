@@ -1,11 +1,12 @@
 """JSON API routes for AJAX."""
 import logging
 import html
-from fastapi import APIRouter, Request, Cookie
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from db import get_repository
+from web.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
@@ -61,18 +62,17 @@ class CommentCreate(BaseModel):
 
 @router.post("/comments/{web_article_id}")
 async def api_post_comment(
+    request: Request,
     web_article_id: int,
     body: CommentCreate,
-    gf_user: str = Cookie(default=None),
 ):
-    """Post a comment on an article. Requires gf_user cookie (mock auth)."""
-    if not gf_user:
+    """Post a comment on an article. Requires authenticated session."""
+    user = get_current_user(request)
+    if not user:
         return JSONResponse({"error": "No autenticado"}, status_code=401)
 
-    # Parse mock user cookie: "Name|Initials"
-    parts = gf_user.split("|", 1)
-    user_name = parts[0].strip()
-    user_initials = parts[1].strip() if len(parts) > 1 else user_name[:2].upper()
+    user_name = user["display_name"]
+    user_initials = user["initials"]
 
     # Sanitize
     clean_text = html.escape(body.comment_text.strip())
@@ -85,6 +85,7 @@ async def api_post_comment(
         user_name=html.escape(user_name),
         user_initials=html.escape(user_initials),
         comment_text=clean_text,
+        user_id=user["id"],
     )
 
     return JSONResponse({
@@ -92,5 +93,5 @@ async def api_post_comment(
         "user_name": user_name,
         "user_initials": user_initials,
         "comment_text": clean_text,
-        "created_at": "ahora",
+        "created_at": "now",
     }, status_code=201)

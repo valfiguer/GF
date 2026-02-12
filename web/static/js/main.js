@@ -1,6 +1,8 @@
 // GoalFeed Main JS — Theme, User Menu, Mobile Menu, Carousel, Comments
 
 (function () {
+    var I18N = window.GF_I18N || {};
+
     // --- Theme Management ---
     var THEME_KEY = 'gf-theme';
     var META_THEME = document.querySelector('meta[name="theme-color"]');
@@ -34,15 +36,6 @@
             applyTheme(e.matches ? 'dark' : 'light');
         }
     });
-
-    // --- Mock User Cookie ---
-    // Set mock user cookie for "Carlos M." so comments work out of the box
-    function ensureMockUser() {
-        if (!document.cookie.match(/gf_user=/)) {
-            document.cookie = 'gf_user=Carlos M.|CM; path=/; SameSite=Lax; max-age=31536000';
-        }
-    }
-    ensureMockUser();
 
     // --- DOM Ready ---
     document.addEventListener('DOMContentLoaded', function () {
@@ -166,7 +159,7 @@
             for (var i = 0; i < totalPages; i++) {
                 var dot = document.createElement('button');
                 dot.className = 'gf-showcase__dot';
-                dot.setAttribute('aria-label', 'Pagina ' + (i + 1));
+                dot.setAttribute('aria-label', (i + 1));
                 (function (idx) {
                     dot.addEventListener('click', function () { goTo(idx); });
                 })(i);
@@ -348,15 +341,20 @@
     }
 
     function formatTime(dateStr) {
-        if (!dateStr || dateStr === 'ahora') return 'ahora';
+        var nowLabel = I18N['now'] || 'ahora';
+        var minLabel = I18N['min'] || 'min';
+        var hLabel = I18N['h'] || 'h';
+
+        if (!dateStr || dateStr === 'ahora' || dateStr === 'now') return nowLabel;
         try {
             var d = new Date(dateStr);
             var now = new Date();
             var diff = (now - d) / 1000;
-            if (diff < 60) return 'ahora';
-            if (diff < 3600) return Math.floor(diff / 60) + ' min';
-            if (diff < 86400) return Math.floor(diff / 3600) + ' h';
-            return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            if (diff < 60) return nowLabel;
+            if (diff < 3600) return Math.floor(diff / 60) + ' ' + minLabel;
+            if (diff < 86400) return Math.floor(diff / 3600) + ' ' + hLabel;
+            var locale = (window.GF_LANG === 'en') ? 'en-GB' : 'es-ES';
+            return d.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
         } catch (e) {
             return dateStr;
         }
@@ -369,7 +367,7 @@
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 if (!data.comments || data.comments.length === 0) {
-                    container.innerHTML = '<div class="gf-comments__empty">Se el primero en comentar</div>';
+                    container.innerHTML = '<div class="gf-comments__empty">' + escapeHtml(I18N['comment_empty'] || 'Sé el primero en comentar') + '</div>';
                     return;
                 }
 
@@ -390,7 +388,7 @@
             })
             .catch(function (err) {
                 console.error('Error loading comments:', err);
-                container.innerHTML = '<div class="gf-comments__empty">Error cargando comentarios</div>';
+                container.innerHTML = '<div class="gf-comments__empty">' + escapeHtml(I18N['comment_error'] || 'Error cargando comentarios') + '</div>';
             });
     }
 })();

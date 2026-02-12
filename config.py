@@ -81,6 +81,10 @@ class WebConfig:
     claude_model: str = "claude-sonnet-4-5-20250929"
     articles_per_page: int = 12
     image_storage_path: str = "web/static/images/articles"
+    # Google OAuth
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    google_redirect_uri: str = ""
 
 
 @dataclass
@@ -118,8 +122,6 @@ class Config:
     # Cooldown by sport (minutes)
     cooldown_minutes_by_sport: Dict[str, int] = field(default_factory=lambda: {
         "football_eu": 15,
-        "nba": 20,
-        "tennis": 30
     })
     
     # Digest Settings
@@ -156,8 +158,6 @@ class Config:
     # Fallback images
     fallback_images: Dict[str, str] = field(default_factory=lambda: {
         "football_eu": "assets/fallback_football.jpg",
-        "nba": "assets/fallback_nba.jpg",
-        "tennis": "assets/fallback_tennis.jpg",
         "default": "assets/fallback_football.jpg"
     })
     
@@ -221,6 +221,12 @@ class Config:
             self.web.claude_api_key = os.getenv("CLAUDE_API_KEY")
         if os.getenv("CLAUDE_MODEL"):
             self.web.claude_model = os.getenv("CLAUDE_MODEL")
+        if os.getenv("GOOGLE_CLIENT_ID"):
+            self.web.google_client_id = os.getenv("GOOGLE_CLIENT_ID")
+        if os.getenv("GOOGLE_CLIENT_SECRET"):
+            self.web.google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        if os.getenv("GOOGLE_REDIRECT_URI"):
+            self.web.google_redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
     
     def _get_default_sources(self) -> List[RSSSource]:
         """Get default RSS sources for all sports - Spanish language."""
@@ -282,61 +288,27 @@ class Config:
                 sport_hint="football_eu",
                 weight=17  # Fichajes y traspasos
             ),
-            
+
             # ===============================
-            # NBA / BALONCESTO
+            # FÚTBOL - MEDIOS INGLESES
             # ===============================
             RSSSource(
-                name="Marca NBA",
-                url="https://e00-marca.uecdn.es/rss/baloncesto/nba.xml",
-                sport_hint="nba",
+                name="BBC Sport Football",
+                url="https://feeds.bbci.co.uk/sport/football/rss.xml",
+                sport_hint="football_eu",
+                weight=23
+            ),
+            RSSSource(
+                name="Sky Sports Football",
+                url="https://www.skysports.com/rss/12040",
+                sport_hint="football_eu",
+                weight=21
+            ),
+            RSSSource(
+                name="The Guardian Football",
+                url="https://www.theguardian.com/football/rss",
+                sport_hint="football_eu",
                 weight=22
-            ),
-            RSSSource(
-                name="AS Baloncesto",
-                url="https://feeds.as.com/mrss-s/pages/as/site/as.com/section/baloncesto/portada/",
-                sport_hint="nba",
-                weight=22
-            ),
-            RSSSource(
-                name="Mundo Deportivo NBA",
-                url="https://www.mundodeportivo.com/feed/rss/baloncesto/nba",
-                sport_hint="nba",
-                weight=20
-            ),
-            RSSSource(
-                name="Somos Basket",
-                url="https://www.somosbasket.com/feed/",
-                sport_hint="nba",
-                weight=18
-            ),
-            
-            # ===============================
-            # TENIS
-            # ===============================
-            RSSSource(
-                name="Marca Tenis",
-                url="https://e00-marca.uecdn.es/rss/mas-deporte.xml",
-                sport_hint="tennis",
-                weight=20
-            ),
-            RSSSource(
-                name="AS Tenis",
-                url="https://feeds.as.com/mrss-s/pages/as/site/as.com/section/tenis/portada/",
-                sport_hint="tennis",
-                weight=22
-            ),
-            RSSSource(
-                name="Mundo Deportivo Tenis",
-                url="https://www.mundodeportivo.com/feed/rss/tenis",
-                sport_hint="tennis",
-                weight=20
-            ),
-            RSSSource(
-                name="Eurosport Tenis",
-                url="https://www.eurosport.es/rss.xml",
-                sport_hint="tennis",
-                weight=19
             ),
         ]
 
@@ -347,7 +319,7 @@ config = Config()
 
 # Official source domains for CONFIRMADO status
 OFFICIAL_DOMAINS = {
-    # Football
+    # Football — Clubs
     "realmadrid.com",
     "fcbarcelona.com",
     "atleticodemadrid.com",
@@ -363,6 +335,7 @@ OFFICIAL_DOMAINS = {
     "psg.fr",
     "fcbayern.com",
     "bvb.de",
+    # Football — Leagues & Federations
     "laliga.com",
     "premierleague.com",
     "bundesliga.com",
@@ -370,38 +343,11 @@ OFFICIAL_DOMAINS = {
     "ligue1.com",
     "uefa.com",
     "fifa.com",
-    
-    # NBA
-    "nba.com",
-    "espn.com",
-    
-    # Tennis
-    "atptour.com",
-    "wtatennis.com",
-    "ausopen.com",
-    "rolandgarros.com",
-    "wimbledon.com",
-    "usopen.org",
-    "itftennis.com"
 }
 
 
 # Keywords for sport classification
 SPORT_KEYWORDS = {
-    "nba": [
-        "nba", "lakers", "warriors", "celtics", "bulls", "knicks", "nets",
-        "heat", "bucks", "suns", "nuggets", "clippers", "mavericks", "spurs",
-        "lebron", "curry", "durant", "giannis", "jokic", "embiid", "luka",
-        "basketball", "baloncesto", "canasta", "triple", "slam dunk",
-        "all-star", "playoffs nba", "mvp nba", "draft"
-    ],
-    "tennis": [
-        "atp", "wta", "grand slam", "roland garros", "wimbledon", "us open",
-        "australian open", "federer", "nadal", "djokovic", "alcaraz", "sinner",
-        "swiatek", "sabalenka", "gauff", "rybakina", "medvedev", "zverev",
-        "tenis", "tennis", "raqueta", "ace", "break point", "match point",
-        "set", "tie break", "deuce"
-    ],
     "football_eu": [
         "futbol", "fútbol", "football", "soccer", "liga", "premier league",
         "champions", "europa league", "laliga", "serie a", "bundesliga",
@@ -534,16 +480,6 @@ SPORT_DISPLAY = {
         "hashtag": "#Fútbol",
         "emoji": "⚽"
     },
-    "nba": {
-        "name": "NBA",
-        "hashtag": "#NBA",
-        "emoji": "🏀"
-    },
-    "tennis": {
-        "name": "Tenis",
-        "hashtag": "#Tenis",
-        "emoji": "🎾"
-    }
 }
 
 

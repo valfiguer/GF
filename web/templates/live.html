@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}En Vivo{% endblock %}
-{% block meta_description %}Partidos en vivo - Marcadores y eventos en tiempo real{% endblock %}
+{% block title %}{{ t("live.title", lang) }}{% endblock %}
+{% block meta_description %}{{ t("live.title", lang) }} - GoalFeed{% endblock %}
 
 {% block content %}
+{% set lang = get_lang(request) %}
 <div class="gf-container gf-container--wide gf-section">
 
     <!-- Header -->
     <div class="gf-live-header-page">
         <span class="gf-live-dot gf-live-dot--lg"></span>
-        <h1 class="gf-live-header-page__title">En Vivo</h1>
-        <span class="gf-live-header-page__time" id="live-update-time">Actualizado ahora</span>
+        <h1 class="gf-live-header-page__title">{{ t("live.title", lang) }}</h1>
+        <span class="gf-live-header-page__time" id="live-update-time">{{ t("live.updated", lang) }}</span>
     </div>
 
     <div id="live-matches-container">
@@ -22,8 +23,8 @@
         </div>
         {% else %}
         <div class="gf-empty" id="no-matches-msg">
-            <p class="gf-empty__text">No hay partidos en vivo en este momento.</p>
-            <p class="gf-empty__subtext">Esta página se actualiza automáticamente.</p>
+            <p class="gf-empty__text">{{ t("live.empty", lang) }}</p>
+            <p class="gf-empty__subtext">{{ t("live.empty_sub", lang) }}</p>
         </div>
         {% endif %}
     </div>

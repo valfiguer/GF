@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Inicio{% endblock %}
+{% block title %}{{ t("nav.home", lang) }}{% endblock %}
 
 {% block content %}
+{% set lang = get_lang(request) %}
 <div class="gf-container gf-section">
 
     <!-- Hero / Featured -->
     {% if featured %}
     <section style="margin-bottom: 48px;">
-        <h2 class="gf-section__title">Destacados</h2>
+        <h2 class="gf-section__title">{{ t("home.featured", lang) }}</h2>
 
         <!-- Hero article (first one, large) -->
         {% set article = featured[0] %}
@@ -29,12 +30,12 @@
     {% if articles %}
     <section class="gf-showcase">
         <div class="gf-showcase__header">
-            <h2 class="gf-section__title" style="margin-bottom: 0;">Ultimas Noticias</h2>
+            <h2 class="gf-section__title" style="margin-bottom: 0;">{{ t("home.latest", lang) }}</h2>
             <div class="gf-showcase__controls">
-                <button class="gf-showcase__arrow gf-showcase__arrow--prev" id="showcase-prev" aria-label="Anterior">
+                <button class="gf-showcase__arrow gf-showcase__arrow--prev" id="showcase-prev" aria-label="{{ t('pagination.prev', lang) }}">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
-                <button class="gf-showcase__arrow gf-showcase__arrow--next" id="showcase-next" aria-label="Siguiente">
+                <button class="gf-showcase__arrow gf-showcase__arrow--next" id="showcase-next" aria-label="{{ t('pagination.next', lang) }}">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
             </div>
@@ -63,7 +64,7 @@
     <!-- Remaining articles grid + pagination -->
     {% if articles | length > 6 %}
     <section style="margin-top: 48px;">
-        <h2 class="gf-section__title">Mas Noticias</h2>
+        <h2 class="gf-section__title">{{ t("home.more", lang) }}</h2>
         <div class="gf-grid gf-grid--3">
             {% for article in articles[6:] %}
             {% include "partials/article_card.html" %}
@@ -75,19 +76,19 @@
     {% if total_pages > 1 %}
     <div class="gf-pagination">
         {% if page > 1 %}
-        <a href="/?page={{ page - 1 }}" class="gf-pagination__btn">&laquo; Anterior</a>
+        <a href="/?page={{ page - 1 }}" class="gf-pagination__btn">&laquo; {{ t("pagination.prev", lang) }}</a>
         {% endif %}
         <span class="gf-pagination__current">{{ page }} / {{ total_pages }}</span>
         {% if page < total_pages %}
-        <a href="/?page={{ page + 1 }}" class="gf-pagination__btn">Siguiente &raquo;</a>
+        <a href="/?page={{ page + 1 }}" class="gf-pagination__btn">{{ t("pagination.next", lang) }} &raquo;</a>
         {% endif %}
     </div>
     {% endif %}
 
     {% if not articles %}
     <div class="gf-empty">
-        <p class="gf-empty__text">No hay articulos publicados aun.</p>
-        <p class="gf-empty__subtext">Los articulos se generan automaticamente desde las fuentes RSS.</p>
+        <p class="gf-empty__text">{{ t("home.empty", lang) }}</p>
+        <p class="gf-empty__subtext">{{ t("home.empty_sub", lang) }}</p>
     </div>
     {% endif %}
 </div>

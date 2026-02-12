@@ -1,26 +1,27 @@
+{% set lang = get_lang(request) %}
 <footer class="gf-footer">
     <div class="gf-container">
         <div class="gf-footer__grid">
             <!-- Brand -->
             <div>
                 <img src="/static/images/GFLogo.png" alt="GoalFeed" class="gf-footer__logo">
-                <p class="gf-footer__description">Tu portal de noticias deportivas. Las mejores noticias de futbol, NBA y tenis.</p>
+                <p class="gf-footer__description">{{ t("footer.description", lang) }}</p>
             </div>
 
             <!-- Categories -->
             <div>
-                <h3 class="gf-footer__heading">Categorias</h3>
+                <h3 class="gf-footer__heading">{{ t("footer.categories", lang) }}</h3>
                 <ul class="gf-footer__links">
                     {% for sport_key, sport_info in SPORT_DISPLAY.items() %}
                     <li><a href="/category/{{ sport_key }}" class="gf-footer__link">{{ sport_info.name }}</a></li>
                     {% endfor %}
-                    <li><a href="/live" class="gf-footer__link gf-footer__link--live">En Vivo</a></li>
+                    <li><a href="/live" class="gf-footer__link gf-footer__link--live">{{ t("nav.live", lang) }}</a></li>
                 </ul>
             </div>
 
             <!-- Info -->
             <div>
-                <h3 class="gf-footer__heading">Info</h3>
+                <h3 class="gf-footer__heading">{{ t("footer.info", lang) }}</h3>
                 <ul class="gf-footer__links">
                     <li><a href="/sitemap.xml" class="gf-footer__link">Sitemap</a></li>
                 </ul>
@@ -28,7 +29,7 @@
         </div>
 
         <div class="gf-footer__copyright">
-            &copy; {{ 2026 }} GoalFeed. Las fuentes originales son citadas en cada articulo.
+            &copy; {{ 2026 }} {{ t("footer.copyright", lang) }}
         </div>
     </div>
 </footer>

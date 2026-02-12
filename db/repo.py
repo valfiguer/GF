@@ -146,6 +146,13 @@ class Repository:
             )
             return cursor.lastrowid
     
+    def deactivate_source(self, source_id: int):
+        """Deactivate a source by setting active = 0."""
+        self.db.execute(
+            "UPDATE sources SET active = 0, updated_at = %s WHERE id = %s",
+            (datetime_to_iso(utc_now()), source_id)
+        )
+
     def update_source_fetched(self, source_id: int):
         """Update the last_fetched_at timestamp for a source."""
         self.db.execute(
@@ -1025,12 +1032,19 @@ class Repository:
         )
         return [dict(row) for row in rows]
 
-    def add_comment(self, web_article_id: int, user_name: str, user_initials: str, comment_text: str) -> int:
+    def add_comment(
+        self,
+        web_article_id: int,
+        user_name: str,
+        user_initials: str,
+        comment_text: str,
+        user_id: Optional[int] = None,
+    ) -> int:
         """Add a comment to a web article. Returns comment id."""
         cursor = self.db.execute(
-            """INSERT INTO web_comments (web_article_id, user_name, user_initials, comment_text)
-               VALUES (%s, %s, %s, %s)""",
-            (web_article_id, user_name, user_initials, comment_text)
+            """INSERT INTO web_comments (web_article_id, user_name, user_initials, comment_text, user_id)
+               VALUES (%s, %s, %s, %s, %s)""",
+            (web_article_id, user_name, user_initials, comment_text, user_id)
         )
         return cursor.lastrowid
 
@@ -1041,6 +1055,100 @@ class Repository:
             (web_article_id,)
         )
         return row['count'] if row else 0
+
+    # ===================
+    # USERS
+    # ===================
+
+    def create_user(
+        self,
+        email: str,
+        display_name: str,
+        initials: str,
+        password_hash: Optional[str] = None,
+        auth_provider: str = "local",
+        google_id: Optional[str] = None,
+        avatar_url: Optional[str] = None,
+    ) -> int:
+        """Create a new user. Returns user id."""
+        now = datetime_to_iso(utc_now())
+        cursor = self.db.execute(
+            """INSERT INTO users (email, password_hash, display_name, initials,
+                avatar_url, auth_provider, google_id, created_at, updated_at)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (email, password_hash, display_name, initials,
+             avatar_url, auth_provider, google_id, now, now)
+        )
+        return cursor.lastrowid
+
+    def get_user_by_email(self, email: str) -> Optional[Dict]:
+        """Get a user by email."""
+        row = self.db.fetchone(
+            "SELECT * FROM users WHERE email = %s",
+            (email,)
+        )
+        return dict(row) if row else None
+
+    def get_user_by_google_id(self, google_id: str) -> Optional[Dict]:
+        """Get a user by Google ID."""
+        row = self.db.fetchone(
+            "SELECT * FROM users WHERE google_id = %s",
+            (google_id,)
+        )
+        return dict(row) if row else None
+
+    def get_user_by_id(self, user_id: int) -> Optional[Dict]:
+        """Get a user by ID."""
+        row = self.db.fetchone(
+            "SELECT * FROM users WHERE id = %s",
+            (user_id,)
+        )
+        return dict(row) if row else None
+
+    def update_user_last_login(self, user_id: int):
+        """Update the last_login_at timestamp for a user."""
+        self.db.execute(
+            "UPDATE users SET last_login_at = %s WHERE id = %s",
+            (datetime_to_iso(utc_now()), user_id)
+        )
+
+    # ===================
+    # SESSIONS
+    # ===================
+
+    def create_session(self, session_id: str, user_id: int, expires_at: str):
+        """Create a new session."""
+        self.db.execute(
+            """INSERT INTO sessions (id, user_id, expires_at)
+               VALUES (%s, %s, %s)""",
+            (session_id, user_id, expires_at)
+        )
+
+    def get_user_by_session(self, session_id: str) -> Optional[Dict]:
+        """Get a user by their session token. Returns None if expired or not found."""
+        now = datetime_to_iso(utc_now())
+        row = self.db.fetchone(
+            """SELECT u.* FROM users u
+               JOIN sessions s ON s.user_id = u.id
+               WHERE s.id = %s AND s.expires_at > %s AND u.is_active = 1""",
+            (session_id, now)
+        )
+        return dict(row) if row else None
+
+    def delete_session(self, session_id: str):
+        """Delete a session."""
+        self.db.execute(
+            "DELETE FROM sessions WHERE id = %s",
+            (session_id,)
+        )
+
+    def cleanup_expired_sessions(self):
+        """Remove all expired sessions."""
+        now = datetime_to_iso(utc_now())
+        self.db.execute(
+            "DELETE FROM sessions WHERE expires_at <= %s",
+            (now,)
+        )
 
 
 # Convenience function

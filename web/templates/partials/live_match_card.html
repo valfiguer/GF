@@ -1,3 +1,4 @@
+{% set lang = get_lang(request) %}
 <div class="gf-live-card">
     <!-- Match header -->
     <div class="gf-live-header">
@@ -7,9 +8,9 @@
             <span class="gf-live-dot"></span>
             <span class="gf-live-status--live">{{ match.current_minute }}'</span>
             {% elif match.match_status == 'HT' %}
-            <span class="gf-live-status--ht">Descanso</span>
+            <span class="gf-live-status--ht">{{ t("live.halftime", lang) }}</span>
             {% elif match.match_status in ['FT', 'AET'] %}
-            <span class="gf-live-status--ft">Final</span>
+            <span class="gf-live-status--ft">{{ t("live.fulltime", lang) }}</span>
             {% else %}
             <span class="gf-live-status--ft">{{ match.match_status }}</span>
             {% endif %}

@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 
 {% block title %}{{ sport_info.name }}{% endblock %}
-{% block meta_description %}Noticias de {{ sport_info.name }} en GoalFeed{% endblock %}
+{% block meta_description %}{{ sport_info.name }} - GoalFeed{% endblock %}
 
 {% block content %}
+{% set lang = get_lang(request) %}
 <div class="gf-container gf-section">
 
     <!-- Header -->
     <div class="gf-category-header">
         <h1 class="gf-category-header__title">{{ ICONS.get(sport, '') | safe }} {{ sport_info.name }}</h1>
-        <p class="gf-category-header__count">{{ total }} articulo{{ 's' if total != 1 else '' }} publicado{{ 's' if total != 1 else '' }}</p>
+        <p class="gf-category-header__count">{{ t("category.articles_count", lang, count=total, s=('s' if total != 1 else '')) }}</p>
     </div>
 
     {% if articles %}
@@ -31,20 +32,20 @@
     {% if total_pages > 1 %}
     <div class="gf-pagination">
         {% if page > 1 %}
-        <a href="/category/{{ sport }}?page={{ page - 1 }}" class="gf-pagination__btn">&laquo; Anterior</a>
+        <a href="/category/{{ sport }}?page={{ page - 1 }}" class="gf-pagination__btn">&laquo; {{ t("pagination.prev", lang) }}</a>
         {% endif %}
 
         <span class="gf-pagination__current">{{ page }} / {{ total_pages }}</span>
 
         {% if page < total_pages %}
-        <a href="/category/{{ sport }}?page={{ page + 1 }}" class="gf-pagination__btn">Siguiente &raquo;</a>
+        <a href="/category/{{ sport }}?page={{ page + 1 }}" class="gf-pagination__btn">{{ t("pagination.next", lang) }} &raquo;</a>
         {% endif %}
     </div>
     {% endif %}
 
     {% else %}
     <div class="gf-empty">
-        <p class="gf-empty__text">No hay articulos de {{ sport_info.name }} aun.</p>
+        <p class="gf-empty__text">{{ t("category.empty", lang, sport=sport_info.name) }}</p>
     </div>
     {% endif %}
 </div>

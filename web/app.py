@@ -9,9 +9,11 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 from config import get_config, SPORT_DISPLAY, STATUS_CONFIG
+from web.i18n import t, get_lang, get_js_translations
+from web.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +146,10 @@ def create_app() -> FastAPI:
         "ICONS": WEB_ICONS,
         "site_name": "GoalFeed",
         "base_url": config.web.base_url,
+        "t": t,
+        "get_lang": get_lang,
+        "get_js_translations": get_js_translations,
+        "get_current_user": get_current_user,
     })
 
     # Register routes
@@ -153,6 +159,7 @@ def create_app() -> FastAPI:
     from web.routes.live import router as live_router
     from web.routes.api import router as api_router
     from web.routes.sitemap import router as sitemap_router
+    from web.routes.auth import router as auth_router
 
     app.include_router(home_router)
     app.include_router(article_router)
@@ -160,6 +167,16 @@ def create_app() -> FastAPI:
     app.include_router(live_router)
     app.include_router(api_router)
     app.include_router(sitemap_router)
+    app.include_router(auth_router)
+
+    # Language switcher route
+    @app.get("/set-lang/{lang}")
+    async def set_lang(request: Request, lang: str):
+        lang = lang if lang in ("es", "en") else "es"
+        referer = request.headers.get("referer", "/")
+        response = RedirectResponse(url=referer, status_code=302)
+        response.set_cookie("gf_lang", lang, max_age=365 * 24 * 3600, path="/", samesite="lax")
+        return response
 
     logger.info("GoalFeed web app created")
     return app

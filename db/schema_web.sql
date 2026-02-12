@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS web_articles (
 CREATE TABLE IF NOT EXISTS web_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     web_article_id INT NOT NULL,
+    user_id INT NULL,
     user_name VARCHAR(255) NOT NULL,
     user_initials VARCHAR(10) NOT NULL DEFAULT '??',
     comment_text TEXT NOT NULL,
@@ -46,5 +47,36 @@ CREATE TABLE IF NOT EXISTS web_comments (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_web_comments_article (web_article_id),
     INDEX idx_web_comments_created (created_at),
+    INDEX idx_web_comments_user (user_id),
     FOREIGN KEY (web_article_id) REFERENCES web_articles(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NULL,
+    display_name VARCHAR(255) NOT NULL,
+    initials VARCHAR(10) NOT NULL DEFAULT '??',
+    avatar_url VARCHAR(2048) NULL,
+    auth_provider VARCHAR(20) NOT NULL DEFAULT 'local',
+    google_id VARCHAR(255) NULL UNIQUE,
+    is_active TINYINT(1) DEFAULT 1,
+    is_admin TINYINT(1) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login_at DATETIME NULL,
+    INDEX idx_users_email (email),
+    INDEX idx_users_google_id (google_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Sessions table
+CREATE TABLE IF NOT EXISTS sessions (
+    id VARCHAR(128) NOT NULL PRIMARY KEY,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    INDEX idx_sessions_user (user_id),
+    INDEX idx_sessions_expires (expires_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
