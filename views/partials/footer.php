@@ -23,6 +23,8 @@
             <div>
                 <h3 class="gf-footer__heading"><?= e(t('footer.info', $lang)) ?></h3>
                 <ul class="gf-footer__links">
+                    <li><a href="/privacy" class="gf-footer__link"><?= e(t('legal.privacy', $lang)) ?></a></li>
+                    <li><a href="/terms" class="gf-footer__link"><?= e(t('legal.terms', $lang)) ?></a></li>
                     <li><a href="/sitemap.xml" class="gf-footer__link">Sitemap</a></li>
                 </ul>
             </div>

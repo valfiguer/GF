@@ -29,6 +29,7 @@ require __DIR__ . '/controllers/ApiController.php';
 require __DIR__ . '/controllers/AuthController.php';
 require __DIR__ . '/controllers/SitemapController.php';
 require __DIR__ . '/controllers/LangController.php';
+require __DIR__ . '/controllers/LegalController.php';
 
 // ── Init view engine ──
 View::init(__DIR__ . '/views');
@@ -61,6 +62,10 @@ $router->get('/auth/profile',           ['AuthController',      'profile']);
 // Sitemap & robots
 $router->get('/sitemap\.xml',           ['SitemapController',   'sitemap']);
 $router->get('/robots\.txt',            ['SitemapController',   'robots']);
+
+// Legal
+$router->get('/privacy',               ['LegalController',     'privacy']);
+$router->get('/terms',                 ['LegalController',     'terms']);
 
 // Language switcher
 $router->get('/set-lang/(es|en)',       ['LangController',      'setLang']);

@@ -152,6 +152,12 @@ $TRANSLATIONS = [
         'en' => 'No live matches at this time.',
     ],
 
+    // ── Legal ──
+    'legal.privacy_title' => ['es' => 'Política de Privacidad', 'en' => 'Privacy Policy'],
+    'legal.terms_title'   => ['es' => 'Términos de Uso',        'en' => 'Terms of Use'],
+    'legal.privacy'       => ['es' => 'Privacidad',             'en' => 'Privacy'],
+    'legal.terms'         => ['es' => 'Términos',               'en' => 'Terms'],
+
     // ── Language switcher ──
     'lang.es' => ['es' => 'ES', 'en' => 'ES'],
     'lang.en' => ['es' => 'EN', 'en' => 'EN'],
