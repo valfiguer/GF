@@ -1,4 +1,31 @@
-<?php $pageTitle = t('nav.home', $lang); ?>
+<?php
+$pageTitle = t('nav.home', $lang);
+$headExtra = '<script type="application/ld+json">'
+    . json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'WebSite',
+        'name' => 'GoalFeed',
+        'url' => BASE_URL . '/',
+        'description' => $metaDescription,
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => 'GoalFeed',
+            'url' => BASE_URL,
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => BASE_URL . '/static/images/GFLogo.png',
+                'width' => 500,
+                'height' => 500,
+            ],
+        ],
+        'potentialAction' => [
+            '@type' => 'SearchAction',
+            'target' => BASE_URL . '/search?q={search_term_string}',
+            'query-input' => 'required name=search_term_string',
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+    . '</script>';
+?>
 <div class="gf-container gf-section">
 
     <!-- Hero / Featured -->

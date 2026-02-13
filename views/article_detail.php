@@ -19,19 +19,52 @@ if (!empty($article['og_image_url'])) {
 $sportDisplay = SPORT_DISPLAY;
 $statusConfig = STATUS_CONFIG;
 
-// JSON-LD
+// JSON-LD NewsArticle
+$newsArticleLD = [
+    '@context'        => 'https://schema.org',
+    '@type'           => 'NewsArticle',
+    'headline'        => $article['headline'],
+    'description'     => $article['meta_description'] ?? $article['subtitle'] ?? '',
+    'image'           => $ogImage,
+    'datePublished'   => $article['created_at'] ?? '',
+    'dateModified'    => $article['updated_at'] ?? $article['created_at'] ?? '',
+    'mainEntityOfPage'=> BASE_URL . '/article/' . $article['slug'],
+    'author'          => ['@type' => 'Organization', 'name' => 'GoalFeed', 'url' => BASE_URL],
+    'publisher'       => [
+        '@type' => 'Organization',
+        'name'  => 'GoalFeed',
+        'url'   => BASE_URL,
+        'logo'  => [
+            '@type'  => 'ImageObject',
+            'url'    => BASE_URL . '/static/images/GFLogo.png',
+            'width'  => 500,
+            'height' => 500,
+        ],
+    ],
+];
+
+// JSON-LD BreadcrumbList
+$breadcrumbItems = [
+    ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => BASE_URL . '/'],
+];
+if (!empty($article['league_slug']) && isset(LEAGUES[$article['league_slug']])) {
+    $artLeague = LEAGUES[$article['league_slug']];
+    $breadcrumbItems[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $artLeague['name_es'], 'item' => BASE_URL . '/league/' . $article['league_slug']];
+    $breadcrumbItems[] = ['@type' => 'ListItem', 'position' => 3, 'name' => $article['headline']];
+} else {
+    $breadcrumbItems[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $article['headline']];
+}
+$breadcrumbLD = [
+    '@context'        => 'https://schema.org',
+    '@type'           => 'BreadcrumbList',
+    'itemListElement' => $breadcrumbItems,
+];
+
 $headExtra = '<script type="application/ld+json">'
-    . json_encode([
-        '@context'      => 'https://schema.org',
-        '@type'         => 'NewsArticle',
-        'headline'      => $article['headline'],
-        'description'   => $article['meta_description'] ?? $article['subtitle'] ?? '',
-        'image'         => $ogImage,
-        'datePublished' => $article['created_at'] ?? '',
-        'dateModified'  => $article['updated_at'] ?? $article['created_at'] ?? '',
-        'author'        => ['@type' => 'Organization', 'name' => 'GoalFeed'],
-        'publisher'     => ['@type' => 'Organization', 'name' => 'GoalFeed'],
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+    . json_encode($newsArticleLD, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+    . '</script>'
+    . '<script type="application/ld+json">'
+    . json_encode($breadcrumbLD, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
     . '</script>';
 ?>
 

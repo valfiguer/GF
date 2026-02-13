@@ -31,6 +31,7 @@ class ArticleRepository {
     public static function getFeatured(int $limit = 4): array {
         return Database::fetchAll(
             "SELECT * FROM web_articles WHERE is_published = 1 AND is_featured = 1
+             AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
              ORDER BY created_at DESC LIMIT ?",
             [$limit]
         );
@@ -116,5 +117,35 @@ class ArticleRepository {
             [$teamSlug]
         );
         return $row ? (int)$row['count'] : 0;
+    }
+
+    // ── Rotation / Trending ──
+
+    public static function getRotatedFeed(int $page = 1, int $perPage = 12): array {
+        $offset = ($page - 1) * $perPage;
+        return Database::fetchAll(
+            "SELECT *,
+                (1000 / (1 + TIMESTAMPDIFF(HOUR, created_at, NOW()) / 6))
+                + (LOG(1 + IFNULL(view_count, 0)) * 10)
+                + (CASE WHEN is_featured = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) THEN 200 ELSE 0 END)
+                + (RAND() * 5)
+                AS feed_score
+             FROM web_articles
+             WHERE is_published = 1
+             ORDER BY feed_score DESC
+             LIMIT ? OFFSET ?",
+            [$perPage, $offset]
+        );
+    }
+
+    public static function getTrending(int $limit = 10): array {
+        return Database::fetchAll(
+            "SELECT * FROM web_articles
+             WHERE is_published = 1
+             AND created_at >= DATE_SUB(NOW(), INTERVAL 48 HOUR)
+             ORDER BY view_count DESC
+             LIMIT ?",
+            [$limit]
+        );
     }
 }

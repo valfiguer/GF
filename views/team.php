@@ -2,7 +2,26 @@
 $teamName    = $lang === 'en' ? $team['name_en'] : $team['name_es'];
 $leagueName  = $lang === 'en' ? $league['name_en'] : $league['name_es'];
 $pageTitle   = $teamName . ' — ' . $leagueName;
-$metaDescription = $teamName . ' — ' . $leagueName . ' | GoalFeed';
+$metaDescription = $lang === 'es'
+    ? "Últimas noticias de {$teamName} ({$leagueName}): fichajes, resultados y análisis — GoalFeed"
+    : "Latest {$teamName} ({$leagueName}) news, transfers, results and analysis — GoalFeed";
+$metaKeywords = $teamName . ', ' . $leagueName . ', ' . ($lang === 'es' ? 'noticias, fichajes, resultados, fútbol' : 'news, transfers, results, football');
+$ogTitle = $teamName . ' — ' . $leagueName . ' | GoalFeed';
+$ogDescription = $metaDescription;
+$ogImage = BASE_URL . ($team['logo'] ?? '/static/images/og-default.jpg');
+
+// JSON-LD BreadcrumbList
+$headExtra = '<script type="application/ld+json">'
+    . json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => BASE_URL . '/'],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => $leagueName, 'item' => BASE_URL . '/league/' . $leagueSlug],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $teamName],
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+    . '</script>';
 ?>
 <div class="gf-container gf-section">
 

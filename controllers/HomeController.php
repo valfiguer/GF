@@ -10,7 +10,7 @@ class HomeController {
             $featured = ArticleRepository::getLatest(4);
         }
 
-        $articles   = ArticleRepository::getPaginated($page, $perPage);
+        $articles   = ArticleRepository::getRotatedFeed($page, $perPage);
         $total      = ArticleRepository::getCountBySport();
         $totalPages = max(1, (int)ceil($total / $perPage));
 

@@ -11,6 +11,10 @@ $ogDescription = $ogDescription ?? t('meta.og_description', $lang);
 $ogImage = $ogImage ?? BASE_URL . '/static/images/og-default.jpg';
 $headExtra = $headExtra ?? '';
 $scriptsExtra = $scriptsExtra ?? '';
+
+// Canonical URL with pagination support
+$queryPage = isset($_GET['page']) && (int)$_GET['page'] > 1 ? '?page='.(int)$_GET['page'] : '';
+$canonicalUrl = $canonicalUrl ?? BASE_URL . $requestPath . $queryPage;
 ?><!DOCTYPE html>
 <html lang="<?= e($lang) ?>" data-theme="light">
 <head>
@@ -29,6 +33,20 @@ $scriptsExtra = $scriptsExtra ?? '';
     <meta property="og:image" content="<?= e($ogImage) ?>">
     <meta property="og:url" content="<?= e(BASE_URL . $requestPath) ?>">
     <meta property="og:site_name" content="GoalFeed">
+    <meta property="og:locale" content="<?= $lang === 'es' ? 'es_ES' : 'en_US' ?>">
+    <meta property="og:locale:alternate" content="<?= $lang === 'es' ? 'en_US' : 'es_ES' ?>">
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($ogTitle) ?>">
+    <meta name="twitter:description" content="<?= e($ogDescription) ?>">
+    <meta name="twitter:image" content="<?= e($ogImage) ?>">
+
+    <!-- Canonical + Hreflang -->
+    <link rel="canonical" href="<?= e($canonicalUrl) ?>">
+    <link rel="alternate" hreflang="es" href="<?= e($canonicalUrl) ?>">
+    <link rel="alternate" hreflang="en" href="<?= e($canonicalUrl) ?>">
+    <link rel="alternate" hreflang="x-default" href="<?= e($canonicalUrl) ?>">
 
     <!-- Prevent FOUC: apply theme before paint -->
     <script>
@@ -67,6 +85,7 @@ $scriptsExtra = $scriptsExtra ?? '';
     <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+    <link rel="manifest" href="/static/site.webmanifest">
 
     <?= $headExtra ?>
 </head>

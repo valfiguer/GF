@@ -18,6 +18,14 @@ class SitemapController {
             echo '  <url><loc>' . e($baseUrl) . '/category/' . $sport . '</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>' . "\n";
         }
 
+        // League and team pages
+        foreach (LEAGUES as $leagueSlug => $league) {
+            echo '  <url><loc>' . e($baseUrl) . '/league/' . e($leagueSlug) . '</loc><changefreq>daily</changefreq><priority>0.8</priority></url>' . "\n";
+            foreach ($league['teams'] as $teamSlug => $team) {
+                echo '  <url><loc>' . e($baseUrl) . '/league/' . e($leagueSlug) . '/' . e($teamSlug) . '</loc><changefreq>daily</changefreq><priority>0.6</priority></url>' . "\n";
+            }
+        }
+
         // Live page
         echo '  <url><loc>' . e($baseUrl) . '/live</loc><changefreq>always</changefreq><priority>0.9</priority></url>' . "\n";
 
