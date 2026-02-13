@@ -73,8 +73,6 @@ $router->get('/terms',                 ['LegalController',     'terms']);
 // Language switcher
 $router->get('/set-lang/(es|en)',       ['LangController',      'setLang']);
 
-// One-time setup (delete after use)
-$router->get('/api/setup/gf2026',       ['HomeController', 'runMigration']);
 
 // ── Dispatch ──
 if (!$router->dispatch()) {

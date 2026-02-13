@@ -1,12 +1,6 @@
 <?php
 class HomeController {
 
-    /** One-time migration — delete after use */
-    public function runMigration(): void {
-        require __DIR__ . '/../migrate_and_backfill.php';
-        exit;
-    }
-
     public function index(): void {
         $page    = max(1, (int)($_GET['page'] ?? 1));
         $perPage = max(ARTICLES_PER_PAGE, 18);
