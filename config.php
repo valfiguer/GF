@@ -166,6 +166,48 @@ define('LEAGUES', [
             'southampton'      => ['name_es' => 'Southampton',        'name_en' => 'Southampton',        'logo' => '/static/images/premierleague/southampton.png'],
         ],
     ],
+    'copadelrey' => [
+        'name_es' => 'Copa del Rey', 'name_en' => 'Copa del Rey',
+        'slug' => 'copadelrey',
+        'logo' => '/static/images/leagues/copadelrey.png',
+        'teams' => [
+            'barcelona'     => ['name_es' => 'FC Barcelona',       'name_en' => 'FC Barcelona',      'logo' => '/static/images/laliga/barcelona.png'],
+            'realmadrid'    => ['name_es' => 'Real Madrid',        'name_en' => 'Real Madrid',       'logo' => '/static/images/laliga/realmadrid.png'],
+            'atlmadrid'     => ['name_es' => 'Atlético de Madrid', 'name_en' => 'Atlético Madrid',   'logo' => '/static/images/laliga/atlmadrid.png'],
+            'athletic'      => ['name_es' => 'Athletic Club',      'name_en' => 'Athletic Club',     'logo' => '/static/images/laliga/athletic.png'],
+            'realsociedad'  => ['name_es' => 'Real Sociedad',      'name_en' => 'Real Sociedad',     'logo' => '/static/images/laliga/realsociedad.png'],
+            'sevilla'       => ['name_es' => 'Sevilla FC',         'name_en' => 'Sevilla FC',        'logo' => '/static/images/laliga/sevilla.png'],
+            'betis'         => ['name_es' => 'Real Betis',         'name_en' => 'Real Betis',        'logo' => '/static/images/laliga/betis.png'],
+            'valencia'      => ['name_es' => 'Valencia CF',        'name_en' => 'Valencia CF',       'logo' => '/static/images/laliga/valencia.png'],
+            'villarreal'    => ['name_es' => 'Villarreal CF',      'name_en' => 'Villarreal CF',     'logo' => '/static/images/laliga/villarreal.png'],
+            'mallorca'      => ['name_es' => 'RCD Mallorca',       'name_en' => 'RCD Mallorca',      'logo' => '/static/images/laliga/mallorca.png'],
+        ],
+    ],
+    'uefa' => [
+        'name_es' => 'UEFA', 'name_en' => 'UEFA',
+        'slug' => 'uefa',
+        'logo' => '/static/images/leagues/uefa.png',
+        'teams' => [
+            'realmadrid'       => ['name_es' => 'Real Madrid',         'name_en' => 'Real Madrid',         'logo' => '/static/images/champions_league/realmadrid.png'],
+            'barcelona'        => ['name_es' => 'FC Barcelona',        'name_en' => 'FC Barcelona',        'logo' => '/static/images/champions_league/barcelona.png'],
+            'atlmadrid'        => ['name_es' => 'Atlético de Madrid',  'name_en' => 'Atlético Madrid',     'logo' => '/static/images/champions_league/atlmadrid.png'],
+            'villarreal'       => ['name_es' => 'Villarreal CF',       'name_en' => 'Villarreal CF',       'logo' => '/static/images/champions_league/villarreal.png'],
+            'athletic'         => ['name_es' => 'Athletic Club',       'name_en' => 'Athletic Club',       'logo' => '/static/images/champions_league/athletic.png'],
+            'betis'            => ['name_es' => 'Real Betis',          'name_en' => 'Real Betis',          'logo' => '/static/images/laliga/betis.png'],
+            'realsociedad'     => ['name_es' => 'Real Sociedad',       'name_en' => 'Real Sociedad',       'logo' => '/static/images/laliga/realsociedad.png'],
+            'roma'             => ['name_es' => 'AS Roma',             'name_en' => 'AS Roma',             'logo' => '/static/images/seriea/roma.png'],
+            'lazio'            => ['name_es' => 'Lazio',               'name_en' => 'Lazio',               'logo' => '/static/images/seriea/lazio.png'],
+            'tottenham'        => ['name_es' => 'Tottenham',           'name_en' => 'Tottenham',           'logo' => '/static/images/champions_league/tottenham.png'],
+            'manchesterunited' => ['name_es' => 'Manchester United',   'name_en' => 'Manchester United',   'logo' => '/static/images/premierleague/manchesterunited.png'],
+            'ajax'             => ['name_es' => 'Ajax',                'name_en' => 'Ajax',                'logo' => '/static/images/champions_league/ajax.png'],
+        ],
+    ],
+    'fifa' => [
+        'name_es' => 'FIFA / Selecciones', 'name_en' => 'FIFA / National Teams',
+        'slug' => 'fifa',
+        'logo' => '/static/images/leagues/fifa.png',
+        'teams' => [],
+    ],
 ]);
 
 // ── Status config ──

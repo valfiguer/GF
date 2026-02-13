@@ -1992,7 +1992,7 @@ img {
     z-index: 90;
     background: var(--color-bg-primary);
     border-bottom: 0.5px solid var(--color-separator);
-    height: 40px;
+    height: 48px;
     transition: background-color 0.3s ease;
 }
 
@@ -2003,7 +2003,8 @@ img {
 .gf-league-nav__scroll {
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 8px;
     height: 100%;
     overflow-x: auto;
     scrollbar-width: none;
@@ -2017,10 +2018,10 @@ img {
 .gf-league-nav__item {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
+    gap: 8px;
+    padding: 6px 16px;
     border-radius: var(--radius-full);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--color-text-secondary);
     white-space: nowrap;
@@ -2046,8 +2047,8 @@ img {
 }
 
 .gf-league-nav__logo {
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
     object-fit: contain;
     flex-shrink: 0;
 }
@@ -2055,7 +2056,7 @@ img {
 /* Team nav — sticky below league nav */
 .gf-team-nav {
     position: sticky;
-    top: 92px;
+    top: 100px;
     z-index: 85;
     background: var(--color-bg-secondary);
     border-bottom: 0.5px solid var(--color-separator);
@@ -2127,13 +2128,13 @@ img {
 /* Responsive adjustments */
 @media (max-width: 639px) {
     .gf-league-nav__item {
-        padding: 4px 10px;
-        font-size: 12px;
-        gap: 4px;
+        padding: 5px 12px;
+        font-size: 13px;
+        gap: 6px;
     }
     .gf-league-nav__logo {
-        width: 16px;
-        height: 16px;
+        width: 22px;
+        height: 22px;
     }
     .gf-team-nav__item {
         padding: 3px 8px;

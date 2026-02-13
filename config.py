@@ -454,6 +454,54 @@ class Config:
                 sport_hint="football_eu",
                 weight=18
             ),
+
+            # ===============================
+            # COPA DEL REY
+            # ===============================
+            RSSSource(
+                name="Marca Copa del Rey",
+                url="https://e00-marca.uecdn.es/rss/futbol/copa-del-rey.xml",
+                sport_hint="football_eu",
+                weight=20
+            ),
+            RSSSource(
+                name="AS Copa del Rey",
+                url="https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/copa-del-rey/portada/",
+                sport_hint="football_eu",
+                weight=20
+            ),
+
+            # ===============================
+            # UEFA — EUROPA LEAGUE / CONFERENCE
+            # ===============================
+            RSSSource(
+                name="Marca Europa League",
+                url="https://e00-marca.uecdn.es/rss/futbol/europa-league.xml",
+                sport_hint="football_eu",
+                weight=18
+            ),
+            RSSSource(
+                name="AS Europa League",
+                url="https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/europa-league/portada/",
+                sport_hint="football_eu",
+                weight=18
+            ),
+
+            # ===============================
+            # FIFA / SELECCIONES
+            # ===============================
+            RSSSource(
+                name="Marca Selección España",
+                url="https://e00-marca.uecdn.es/rss/futbol/seleccion.xml",
+                sport_hint="football_eu",
+                weight=18
+            ),
+            RSSSource(
+                name="BBC Sport Football World",
+                url="https://feeds.bbci.co.uk/sport/football/rss.xml",
+                sport_hint="football_eu",
+                weight=16
+            ),
         ]
 
 
@@ -579,6 +627,22 @@ LEAGUE_KEYWORDS = {
         "premier league", "premier", "epl", "liga inglesa",
         "english premier", "premiership", "fa cup", "carabao cup",
         "league cup",
+    ],
+    "copadelrey": [
+        "copa del rey", "copa rey", "king's cup", "eliminatoria copa",
+        "cuartos copa", "semifinal copa", "final copa del rey",
+    ],
+    "uefa": [
+        "europa league", "conference league", "uefa europa",
+        "europa conference", "supercopa europa", "uefa supercup",
+        "europa league draw", "sorteo europa league",
+    ],
+    "fifa": [
+        "mundial", "world cup", "copa del mundo", "selección",
+        "seleccion", "nations league", "liga de naciones",
+        "eliminatorias", "qualifiers", "amistoso internacional",
+        "friendly international", "eurocopa", "euro 2024", "euro 2028",
+        "copa america", "copa américa",
     ],
 }
 

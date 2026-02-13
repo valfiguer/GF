@@ -169,6 +169,9 @@ $LEAGUE_KEYWORDS = [
     'champions' => ['champions league', 'champions', 'ucl', 'uefa champions', 'champions league draw', 'sorteo champions', 'fase de grupos champions', 'octavos champions', 'cuartos champions', 'semifinal champions', 'final champions', 'orejona'],
     'seriea' => ['serie a', 'calcio', 'scudetto', 'seria a', 'liga italiana', 'campeonato italiano'],
     'premierleague' => ['premier league', 'premier', 'epl', 'liga inglesa', 'english premier', 'premiership', 'fa cup', 'carabao cup', 'league cup'],
+    'copadelrey' => ['copa del rey', 'copa rey', "king's cup", 'eliminatoria copa', 'cuartos copa', 'semifinal copa', 'final copa del rey'],
+    'uefa' => ['europa league', 'conference league', 'uefa europa', 'europa conference', 'supercopa europa', 'uefa supercup'],
+    'fifa' => ['mundial', 'world cup', 'copa del mundo', 'selección', 'seleccion', 'nations league', 'liga de naciones', 'eliminatorias', 'qualifiers', 'eurocopa', 'copa america', 'copa américa'],
 ];
 
 // ── Classification functions ──
