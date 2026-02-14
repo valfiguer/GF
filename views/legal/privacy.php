@@ -1,4 +1,9 @@
-<?php $pageTitle = t('legal.privacy_title', $lang); ?>
+<?php
+$pageTitle = t('legal.privacy_title', $lang);
+$metaDescription = $lang === 'es'
+    ? 'Política de privacidad de GoalFeed. Conoce cómo protegemos y utilizamos tus datos.'
+    : 'GoalFeed privacy policy. Learn how we protect and use your data.';
+?>
 <div class="gf-container gf-container--narrow gf-section">
     <h1 class="gf-article__headline"><?= e(t('legal.privacy_title', $lang)) ?></h1>
     <div class="gf-prose">

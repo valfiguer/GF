@@ -28,7 +28,7 @@ $headExtra = '<script type="application/ld+json">'
     <!-- Header -->
     <div class="gf-category-header">
         <div style="display:flex;align-items:center;gap:12px;">
-            <img src="<?= e($team['logo']) ?>" alt="" style="height:40px;width:auto;">
+            <img src="<?= e($team['logo']) ?>" alt="<?= e($teamName) ?>" style="height:40px;width:auto;">
             <div>
                 <h1 class="gf-category-header__title"><?= e($teamName) ?></h1>
                 <p style="font-size:14px;color:var(--color-text-tertiary);margin-top:2px;">

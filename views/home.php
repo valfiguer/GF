@@ -28,6 +28,8 @@ $headExtra = '<script type="application/ld+json">'
 ?>
 <div class="gf-container gf-section">
 
+    <h1 class="gf-sr-only"><?= e(t('nav.home', $lang)) ?> — GoalFeed</h1>
+
     <!-- Hero / Featured -->
     <?php if ($featured): ?>
     <section style="margin-bottom: 48px;">

@@ -1,6 +1,22 @@
 <?php
 $pageTitle       = $sportInfo['name'];
-$metaDescription = $sportInfo['name'] . ' - GoalFeed';
+$metaDescription = $lang === 'es'
+    ? "Últimas noticias de {$sportInfo['name']}: resultados, fichajes y análisis — GoalFeed"
+    : "Latest {$sportInfo['name']} news: results, transfers and analysis — GoalFeed";
+$ogTitle = $sportInfo['name'] . ' — GoalFeed';
+$ogDescription = $metaDescription;
+
+// JSON-LD BreadcrumbList
+$headExtra = '<script type="application/ld+json">'
+    . json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => BASE_URL . '/'],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => $sportInfo['name']],
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+    . '</script>';
 ?>
 <div class="gf-container gf-section">
 

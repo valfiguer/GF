@@ -9,7 +9,7 @@ $teams = $leagueData['teams'] ?? [];
             <?php foreach ($teams as $tSlug => $team): ?>
             <a href="/league/<?= e($currentLeague) ?>/<?= e($tSlug) ?>"
                class="gf-team-nav__item<?= ($currentTeam ?? '') === $tSlug ? ' gf-team-nav__item--active' : '' ?>">
-                <img src="<?= e($team['logo']) ?>" alt="" class="gf-team-nav__logo" width="24" height="24">
+                <img src="<?= e($team['logo']) ?>" alt="<?= e($lang === 'en' ? $team['name_en'] : $team['name_es']) ?>" class="gf-team-nav__logo" width="24" height="24">
                 <span class="gf-team-nav__name"><?= e($lang === 'en' ? $team['name_en'] : $team['name_es']) ?></span>
             </a>
             <?php endforeach; ?>

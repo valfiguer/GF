@@ -26,7 +26,7 @@ $headExtra = '<script type="application/ld+json">'
     <!-- Header -->
     <div class="gf-category-header">
         <div style="display:flex;align-items:center;gap:12px;">
-            <img src="<?= e($league['logo']) ?>" alt="" style="height:36px;width:auto;">
+            <img src="<?= e($league['logo']) ?>" alt="<?= e($leagueName) ?>" style="height:36px;width:auto;">
             <h1 class="gf-category-header__title"><?= e($leagueName) ?></h1>
         </div>
         <p class="gf-category-header__count"><?= e(t('league.articles_count', $lang, ['count' => $total, 's' => ($total != 1 ? 's' : '')])) ?></p>

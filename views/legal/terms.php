@@ -1,4 +1,9 @@
-<?php $pageTitle = t('legal.terms_title', $lang); ?>
+<?php
+$pageTitle = t('legal.terms_title', $lang);
+$metaDescription = $lang === 'es'
+    ? 'Términos y condiciones de uso de GoalFeed. Lee las reglas de nuestra plataforma.'
+    : 'GoalFeed terms and conditions. Read the rules of our platform.';
+?>
 <div class="gf-container gf-container--narrow gf-section">
     <h1 class="gf-article__headline"><?= e(t('legal.terms_title', $lang)) ?></h1>
     <div class="gf-prose">

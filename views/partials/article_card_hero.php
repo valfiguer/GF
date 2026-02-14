@@ -37,7 +37,7 @@ $artSportInfo = $sportDisplay[$article['sport']] ?? [];
                 <?php endif; ?>
             </div>
 
-            <h2 class="gf-hero-card__title"><?= e($article['headline']) ?></h2>
+            <h3 class="gf-hero-card__title"><?= e($article['headline']) ?></h3>
             <?php if (!empty($article['subtitle'])): ?>
             <p class="gf-hero-card__subtitle"><?= e($article['subtitle']) ?></p>
             <?php endif; ?>
