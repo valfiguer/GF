@@ -2078,6 +2078,9 @@ img {
 
 .gf-team-nav .gf-container {
     height: 100%;
+    /* Fade mask: content fades at left/right edges to hint more items */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
 }
 
 .gf-team-nav__scroll {
@@ -2086,8 +2089,13 @@ img {
     gap: 4px;
     height: 100%;
     overflow-x: auto;
+    white-space: nowrap;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* Edge padding so first/last items don't stick to screen edge */
+    padding: 0 16px;
 }
 
 .gf-team-nav__scroll::-webkit-scrollbar {
