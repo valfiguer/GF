@@ -381,6 +381,14 @@
         scrollEl.addEventListener('scroll', updateArrows);
         window.addEventListener('resize', updateArrows);
         updateArrows();
+
+        // Auto-scroll to active team on initial page load
+        var activeItem = scrollEl.querySelector('.gf-team-nav__item--active');
+        if (activeItem) {
+            var scrollTo = activeItem.offsetLeft - scrollEl.offsetWidth / 2 + activeItem.offsetWidth / 2;
+            scrollEl.scrollTo({ left: Math.max(0, scrollTo), behavior: 'instant' });
+            updateArrows();
+        }
     }
 
     // --- Comments Logic ---
