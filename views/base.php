@@ -89,7 +89,7 @@ $canonicalUrl = $canonicalUrl ?? BASE_URL . $requestPath . $queryPage;
         }
     </script>
 
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=<?= filemtime(__DIR__ . '/../static/css/style.css') ?>">
     <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
@@ -121,7 +121,7 @@ $canonicalUrl = $canonicalUrl ?? BASE_URL . $requestPath . $queryPage;
     <?php View::partial('footer', compact('lang')); ?>
 
     <script>window.GF_LANG = "<?= e($lang) ?>"; window.GF_I18N = <?= json_encode(getJsTranslations($lang), JSON_UNESCAPED_UNICODE) ?>;</script>
-    <script src="/static/js/main.js"></script>
+    <script src="/static/js/main.js?v=<?= filemtime(__DIR__ . '/../static/js/main.js') ?>"></script>
     <?= $scriptsExtra ?>
 </body>
 </html>
