@@ -282,6 +282,16 @@
         goTo(0);
     }
 
+    // --- Update team nav active state after AJAX navigation ---
+    function updateTeamNavActive(url) {
+        var navLinks = document.querySelectorAll('.gf-team-nav__item');
+        if (!navLinks.length) return;
+        var path = url.split('?')[0]; // strip query string
+        navLinks.forEach(function (link) {
+            link.classList.toggle('gf-team-nav__item--active', link.getAttribute('href') === path);
+        });
+    }
+
     // --- AJAX Pagination ---
     function initAjaxPagination() {
         if (!document.getElementById('ajax-content')) return;
@@ -309,6 +319,8 @@
                     });
                     // Smooth scroll to top of content
                     fresh.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Update team nav active state
+                    updateTeamNavActive(url);
                 })
                 .catch(function (err) {
                     console.error('AJAX pagination error:', err);
