@@ -40,6 +40,7 @@ jobs:
               --exclude-glob data/goalfeed.db* \
               --exclude-glob logs/app.log \
               --exclude-glob .env \
+              --exclude-glob web/static/images/articles/ \
               ./ ./;
             quit;
           "
