@@ -86,6 +86,9 @@
         // --- Carousel ---
         initCarousel();
 
+        // --- Team Nav ---
+        initTeamNav();
+
         // --- Comments ---
         initComments();
     });
@@ -276,6 +279,36 @@
         goTo(0);
     }
 
+    // --- Team Nav Scroll Arrows ---
+    function initTeamNav() {
+        var nav = document.querySelector('.gf-team-nav');
+        if (!nav) return;
+
+        var scrollEl = nav.querySelector('.gf-team-nav__scroll');
+        var leftBtn = nav.querySelector('.gf-team-nav__arrow--left');
+        var rightBtn = nav.querySelector('.gf-team-nav__arrow--right');
+        if (!scrollEl || !leftBtn || !rightBtn) return;
+
+        function updateArrows() {
+            var sl = scrollEl.scrollLeft;
+            var maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+            leftBtn.classList.toggle('hidden', sl <= 0);
+            rightBtn.classList.toggle('hidden', sl >= maxScroll - 1);
+        }
+
+        leftBtn.addEventListener('click', function () {
+            scrollEl.scrollBy({ left: -200, behavior: 'smooth' });
+        });
+
+        rightBtn.addEventListener('click', function () {
+            scrollEl.scrollBy({ left: 200, behavior: 'smooth' });
+        });
+
+        scrollEl.addEventListener('scroll', updateArrows);
+        window.addEventListener('resize', updateArrows);
+        updateArrows();
+    }
+
     // --- Comments Logic ---
     function initComments() {
         var section = document.getElementById('comments-section');
@@ -312,7 +345,12 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ comment_text: text })
                 })
-                .then(function (res) { return res.json(); })
+                .then(function (res) {
+                    if (!res.ok) {
+                        return res.json().catch(function() { return { error: 'Error del servidor' }; });
+                    }
+                    return res.json();
+                })
                 .then(function (data) {
                     if (data.error) {
                         alert(data.error);

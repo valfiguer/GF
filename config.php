@@ -48,6 +48,11 @@ define('SPORT_DISPLAY', [
         'hashtag' => '#Fútbol',
         'emoji'   => '⚽',
     ],
+    'other' => [
+        'name'    => 'Otros Deportes',
+        'hashtag' => '#Deportes',
+        'emoji'   => '🏅',
+    ],
 ]);
 
 // ── Leagues & Teams ──

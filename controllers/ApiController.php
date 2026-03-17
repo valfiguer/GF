@@ -39,31 +39,36 @@ class ApiController {
             View::renderJson(['error' => 'No autenticado'], 401);
         }
 
-        $input = json_decode(file_get_contents('php://input'), true);
-        $text  = trim($input['comment_text'] ?? '');
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $text  = trim($input['comment_text'] ?? '');
 
-        if ($text === '' || mb_strlen($text) > 2000) {
-            View::renderJson(['error' => 'Comentario vacio'], 400);
+            if ($text === '' || mb_strlen($text) > 2000) {
+                View::renderJson(['error' => 'Comentario vacio'], 400);
+            }
+
+            $cleanText    = e($text);
+            $userName     = $user['display_name'];
+            $userInitials = $user['initials'];
+
+            $commentId = CommentRepository::add(
+                (int)$webArticleId,
+                e($userName),
+                e($userInitials),
+                $cleanText,
+                (int)$user['id']
+            );
+
+            View::renderJson([
+                'id'             => $commentId,
+                'user_name'      => $userName,
+                'user_initials'  => $userInitials,
+                'comment_text'   => $cleanText,
+                'created_at'     => 'now',
+            ], 201);
+        } catch (\Throwable $e) {
+            error_log('Error posting comment: ' . $e->getMessage());
+            View::renderJson(['error' => 'Error al publicar comentario'], 500);
         }
-
-        $cleanText    = e($text);
-        $userName     = $user['display_name'];
-        $userInitials = $user['initials'];
-
-        $commentId = CommentRepository::add(
-            (int)$webArticleId,
-            e($userName),
-            e($userInitials),
-            $cleanText,
-            (int)$user['id']
-        );
-
-        View::renderJson([
-            'id'             => $commentId,
-            'user_name'      => $userName,
-            'user_initials'  => $userInitials,
-            'comment_text'   => $cleanText,
-            'created_at'     => 'now',
-        ], 201);
     }
 }
