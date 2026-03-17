@@ -14,9 +14,8 @@ data/goalfeed.db-shm
 data/goalfeed.db-wal
 logs/app.log
 
-# Generated article images (created by Python pipeline)
-web/static/images/articles/
-static/images/articles/
+# All images managed on server (logos, articles, favicons)
+web/static/images/
 
 # OS
 .DS_Store

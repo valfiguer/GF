@@ -1,9 +1,9 @@
 name: Deploy to FTP
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+  release:
+    types: [published]
 
 jobs:
   deploy:
@@ -31,7 +31,7 @@ jobs:
             set net:timeout 30;
             set net:max-retries 3;
             open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER;
-            mirror --reverse --delete --verbose \
+            mirror --reverse --verbose \
               --exclude-glob .git/ \
               --exclude-glob .git* \
               --exclude-glob .github/ \
@@ -40,7 +40,7 @@ jobs:
               --exclude-glob data/goalfeed.db* \
               --exclude-glob logs/app.log \
               --exclude-glob .env \
-              --exclude-glob web/static/images/articles/ \
+              --exclude-glob web/static/images/ \
               ./ ./;
             quit;
           "
