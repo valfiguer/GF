@@ -21,7 +21,7 @@ $headExtra = '<script type="application/ld+json">'
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
     . '</script>';
 ?>
-<div class="gf-container gf-section">
+<div class="gf-container gf-section" id="ajax-content">
 
     <!-- Header -->
     <div class="gf-category-header">
@@ -51,13 +51,13 @@ $headExtra = '<script type="application/ld+json">'
     <?php if ($totalPages > 1): ?>
     <div class="gf-pagination">
         <?php if ($page > 1): ?>
-        <a href="/league/<?= e($leagueSlug) ?>?page=<?= $page - 1 ?>" class="gf-pagination__btn">&laquo; <?= e(t('pagination.prev', $lang)) ?></a>
+        <a href="/league/<?= e($leagueSlug) ?>?page=<?= $page - 1 ?>" class="gf-pagination__btn" data-ajax-page>&laquo; <?= e(t('pagination.prev', $lang)) ?></a>
         <?php endif; ?>
 
         <span class="gf-pagination__current"><?= $page ?> / <?= $totalPages ?></span>
 
         <?php if ($page < $totalPages): ?>
-        <a href="/league/<?= e($leagueSlug) ?>?page=<?= $page + 1 ?>" class="gf-pagination__btn"><?= e(t('pagination.next', $lang)) ?> &raquo;</a>
+        <a href="/league/<?= e($leagueSlug) ?>?page=<?= $page + 1 ?>" class="gf-pagination__btn" data-ajax-page><?= e(t('pagination.next', $lang)) ?> &raquo;</a>
         <?php endif; ?>
     </div>
     <?php endif; ?>

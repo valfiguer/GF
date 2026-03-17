@@ -89,6 +89,9 @@
         // --- Team Nav ---
         initTeamNav();
 
+        // --- AJAX Pagination ---
+        initAjaxPagination();
+
         // --- Comments ---
         initComments();
     });
@@ -277,6 +280,53 @@
         calcTotalPages();
         buildDots();
         goTo(0);
+    }
+
+    // --- AJAX Pagination ---
+    function initAjaxPagination() {
+        var container = document.getElementById('ajax-content');
+        if (!container) return;
+
+        function loadPage(url) {
+            var separator = url.indexOf('?') !== -1 ? '&' : '?';
+            fetch(url + separator + '_fragment=1')
+                .then(function (res) { return res.text(); })
+                .then(function (html) {
+                    container.innerHTML = html;
+                    // Re-init lazy images
+                    container.querySelectorAll('img[loading="lazy"]').forEach(function (img) {
+                        if (img.complete) {
+                            img.classList.add('loaded');
+                        } else {
+                            img.addEventListener('load', function () { img.classList.add('loaded'); });
+                            img.addEventListener('error', function () { img.classList.add('loaded'); });
+                        }
+                    });
+                    // Smooth scroll to top of content
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                })
+                .catch(function (err) {
+                    console.error('AJAX pagination error:', err);
+                    window.location.href = url;
+                });
+        }
+
+        // Event delegation for pagination links
+        document.addEventListener('click', function (e) {
+            var link = e.target.closest('[data-ajax-page]');
+            if (!link) return;
+            e.preventDefault();
+            var url = link.getAttribute('href');
+            history.pushState({ ajaxPage: true }, '', url);
+            loadPage(url);
+        });
+
+        // Back/forward navigation
+        window.addEventListener('popstate', function (e) {
+            if (document.getElementById('ajax-content')) {
+                loadPage(window.location.href);
+            }
+        });
     }
 
     // --- Team Nav Scroll Arrows ---

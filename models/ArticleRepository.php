@@ -59,7 +59,15 @@ class ArticleRepository {
         return $row ? (int)$row['count'] : 0;
     }
 
-    public static function getRelated(string $sport, string $excludeSlug, int $limit = 4): array {
+    public static function getRelated(string $sport, string $excludeSlug, int $limit = 4, ?string $category = null): array {
+        if ($category) {
+            return Database::fetchAll(
+                "SELECT * FROM web_articles
+                 WHERE is_published = 1 AND sport = ? AND slug != ?
+                 ORDER BY (CASE WHEN category = ? THEN 1 ELSE 0 END) DESC, created_at DESC LIMIT ?",
+                [$sport, $excludeSlug, $category, $limit]
+            );
+        }
         return Database::fetchAll(
             "SELECT * FROM web_articles
              WHERE is_published = 1 AND sport = ? AND slug != ?
@@ -128,7 +136,7 @@ class ArticleRepository {
                 (1000 / (1 + TIMESTAMPDIFF(HOUR, created_at, NOW()) / 6))
                 + (LOG(1 + IFNULL(view_count, 0)) * 10)
                 + (CASE WHEN is_featured = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) THEN 200 ELSE 0 END)
-                + (RAND() * 5)
+                + (id % 7)
                 AS feed_score
              FROM web_articles
              WHERE is_published = 1

@@ -12,7 +12,7 @@ class ArticleController {
 
         ArticleRepository::incrementViewCount($slug);
 
-        $related     = ArticleRepository::getRelated($article['sport'], $slug, 4);
+        $related     = ArticleRepository::getRelated($article['sport'], $slug, 4, $article['category'] ?? null);
         $comments    = CommentRepository::getByArticle((int)$article['id']);
         $currentUser = Session::getCurrentUser();
         $lang        = getLang();

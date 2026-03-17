@@ -18,6 +18,11 @@ class View {
     public static function render(string $template, array $data = []): void {
         // Capture inner template
         $data['content'] = self::capture($template, $data);
+        // AJAX fragment: return content without base layout
+        if (!empty($_GET['_fragment'])) {
+            echo $data['content'];
+            return;
+        }
         // Render base layout
         extract($data, EXTR_SKIP);
         require self::$viewsDir . '/base.php';

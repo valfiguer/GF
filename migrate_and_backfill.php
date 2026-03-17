@@ -146,22 +146,48 @@ $TEAM_ALIASES = [
 ];
 
 $TEAM_LEAGUE_MEMBERSHIP = [
-    'barcelona' => ['laliga', 'champions'],
-    'realmadrid' => ['laliga', 'champions'],
-    'atlmadrid' => ['laliga', 'champions'],
-    'villarreal' => ['laliga', 'champions'],
-    'athletic' => ['laliga', 'champions'],
-    'manchestercity' => ['premierleague', 'champions'],
-    'liverpool' => ['premierleague', 'champions'],
-    'arsenal' => ['premierleague', 'champions'],
-    'chelsea' => ['premierleague', 'champions'],
-    'tottenham' => ['premierleague', 'champions'],
-    'newcastle' => ['premierleague', 'champions'],
-    'inter' => ['seriea', 'champions'],
-    'juventus' => ['seriea', 'champions'],
-    'napoli' => ['seriea', 'champions'],
-    'atalanta' => ['seriea', 'champions'],
-    'milan' => ['seriea', 'champions'],
+    // La Liga — Spanish teams get copadelrey; top clubs get uefa/fifa
+    'barcelona' => ['laliga', 'champions', 'copadelrey', 'uefa', 'fifa'],
+    'realmadrid' => ['laliga', 'champions', 'copadelrey', 'uefa', 'fifa'],
+    'atlmadrid' => ['laliga', 'champions', 'copadelrey', 'uefa'],
+    'villarreal' => ['laliga', 'champions', 'copadelrey', 'uefa'],
+    'athletic' => ['laliga', 'champions', 'copadelrey'],
+    'sevilla' => ['laliga', 'copadelrey', 'uefa'],
+    'betis' => ['laliga', 'copadelrey', 'uefa'],
+    'realsociedad' => ['laliga', 'copadelrey'],
+    'valencia' => ['laliga', 'copadelrey'],
+    'osasuna' => ['laliga', 'copadelrey'],
+    'mallorca' => ['laliga', 'copadelrey'],
+    'getafe' => ['laliga', 'copadelrey'],
+    'girona' => ['laliga', 'copadelrey'],
+    'espanyol' => ['laliga', 'copadelrey'],
+    'rayovallecano' => ['laliga', 'copadelrey'],
+    'alaves' => ['laliga', 'copadelrey'],
+    'celta' => ['laliga', 'copadelrey'],
+    // Premier League — top clubs get uefa/fifa
+    'manchestercity' => ['premierleague', 'champions', 'uefa', 'fifa'],
+    'liverpool' => ['premierleague', 'champions', 'uefa', 'fifa'],
+    'arsenal' => ['premierleague', 'champions', 'uefa', 'fifa'],
+    'chelsea' => ['premierleague', 'champions', 'uefa', 'fifa'],
+    'tottenham' => ['premierleague', 'champions', 'uefa'],
+    'newcastle' => ['premierleague', 'champions', 'uefa'],
+    'manchesterunited' => ['premierleague', 'uefa', 'fifa'],
+    'astonvilla' => ['premierleague', 'champions', 'uefa'],
+    // Serie A — top clubs get uefa/fifa
+    'inter' => ['seriea', 'champions', 'uefa', 'fifa'],
+    'juventus' => ['seriea', 'champions', 'uefa', 'fifa'],
+    'napoli' => ['seriea', 'champions', 'uefa'],
+    'atalanta' => ['seriea', 'champions', 'uefa'],
+    'milan' => ['seriea', 'champions', 'uefa', 'fifa'],
+    'roma' => ['seriea', 'uefa'],
+    'lazio' => ['seriea', 'uefa'],
+    'fiorentina' => ['seriea', 'uefa'],
+    // Other Champions League teams
+    'bayernmunchen' => ['champions', 'uefa', 'fifa'],
+    'borussiadortmund' => ['champions', 'uefa'],
+    'psg' => ['champions', 'uefa', 'fifa'],
+    'benfica' => ['champions', 'uefa'],
+    'sporting' => ['champions', 'uefa'],
 ];
 
 $LEAGUE_KEYWORDS = [
@@ -224,8 +250,12 @@ function classify_teams(string $title, string $body, array $teamAliases, array $
     return $results;
 }
 
-// ── Step 4: Backfill ──
-echo "\n3. Backfilling article_teams...\n";
+// ── Step 4: Backfill (full re-classification) ──
+echo "\n3. Truncating article_teams for fresh re-classification...\n";
+$pdo->exec("TRUNCATE TABLE article_teams");
+$pdo->exec("UPDATE web_articles SET primary_league = NULL, primary_team = NULL");
+echo "   Cleared existing tags\n\n";
+echo "4. Backfilling article_teams...\n";
 
 $articles = $pdo->query(
     "SELECT id, headline, subtitle, body_text FROM web_articles WHERE is_published = 1 ORDER BY id"
@@ -235,7 +265,6 @@ $total = count($articles);
 echo "   Found {$total} published articles\n";
 
 $tagged = 0;
-$skipped = 0;
 
 $insertStmt = $pdo->prepare(
     "INSERT INTO article_teams (web_article_id, league_slug, team_slug, is_primary) VALUES (?, ?, ?, ?)"
@@ -243,19 +272,9 @@ $insertStmt = $pdo->prepare(
 $updateStmt = $pdo->prepare(
     "UPDATE web_articles SET primary_league = ?, primary_team = ? WHERE id = ?"
 );
-$checkStmt = $pdo->prepare(
-    "SELECT id FROM article_teams WHERE web_article_id = ? LIMIT 1"
-);
 
 foreach ($articles as $i => $art) {
     $webId = $art['id'];
-
-    // Skip if already tagged
-    $checkStmt->execute([$webId]);
-    if ($checkStmt->fetch()) {
-        $skipped++;
-        continue;
-    }
 
     $title = $art['headline'] ?? '';
     $body = ($art['body_text'] ?? '') . ' ' . ($art['subtitle'] ?? '');
@@ -272,13 +291,13 @@ foreach ($articles as $i => $art) {
         $tagged++;
 
         if ($tagged % 50 === 0) {
-            echo "   Progress: {$tagged} tagged, {$skipped} skipped, " . ($i + 1) . "/{$total}\n";
+            echo "   Progress: {$tagged} tagged, " . ($i + 1) . "/{$total}\n";
         }
     }
 }
 
 echo "\n=== DONE ===\n";
 echo "Tagged: {$tagged}\n";
-echo "Skipped (already tagged): {$skipped}\n";
+echo "Not matched: " . ($total - $tagged) . "\n";
 echo "Total articles: {$total}\n";
 echo "\nDELETE THIS FILE from the server now!\n";
