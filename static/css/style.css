@@ -2078,9 +2078,42 @@ img {
 
 .gf-team-nav .gf-container {
     height: 100%;
-    /* Fade mask: content fades at left/right edges to hint more items */
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.gf-team-nav__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 0.5px solid var(--color-border);
+    background: var(--color-bg-card);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0;
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.gf-team-nav__arrow:hover {
+    background: var(--color-accent);
+    color: #1d1d1f;
+    border-color: var(--color-accent);
+    transform: scale(1.08);
+}
+
+.gf-team-nav__arrow:active {
+    transform: scale(0.95);
+}
+
+.gf-team-nav__arrow.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .gf-team-nav__scroll {
@@ -2096,6 +2129,11 @@ img {
     scroll-behavior: smooth;
     /* Edge padding so first/last items don't stick to screen edge */
     padding: 0 16px;
+    flex: 1;
+    min-width: 0;
+    /* Fade mask: content fades at left/right edges to hint more items */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 96%, transparent 100%);
 }
 
 .gf-team-nav__scroll::-webkit-scrollbar {
@@ -2155,6 +2193,9 @@ img {
     .gf-league-nav__logo {
         width: 22px;
         height: 22px;
+    }
+    .gf-team-nav__arrow {
+        display: none;
     }
     .gf-team-nav__item {
         padding: 3px 8px;

@@ -53,13 +53,13 @@ def classify_sport(item: NormalizedItem) -> str:
         
         sport_scores[sport] = score
     
-    # Return sport with highest score, default to football_eu
+    # Return sport with highest score, default to "other"
     if sport_scores:
         best_sport = max(sport_scores, key=sport_scores.get)
         if sport_scores[best_sport] > 0:
             return best_sport
-    
-    return "football_eu"
+
+    return "other"
 
 
 def classify_category(item: NormalizedItem) -> str:
@@ -155,8 +155,18 @@ def determine_status(item: NormalizedItem) -> str:
         if keyword in text:
             return "CONFIRMADO"
     
-    # Default to RUMOR for single source
-    return "RUMOR"
+    # Only mark as RUMOR if transfer/market keywords are present
+    transfer_keywords = [
+        "fichaje", "transfer", "signing", "traspaso",
+        "cesión", "loan", "interés", "interest",
+        "target", "objetivo", "negociación",
+        "quiere fichar", "wants to sign",
+    ]
+    for kw in transfer_keywords:
+        if kw in text:
+            return "RUMOR"
+
+    return "CONFIRMADO"
 
 
 def _detect_league_context(text: str) -> Optional[str]:

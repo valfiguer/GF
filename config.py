@@ -691,6 +691,23 @@ SPORT_KEYWORDS = {
         "bellingham", "vinicius", "gol", "fichaje", "transfer", "penalty",
         "penalti", "red card", "tarjeta roja", "portero", "goalkeeper",
         "mundial", "eurocopa", "copa del rey", "fa cup"
+    ],
+    "other": [
+        "juegos olímpicos", "juegos olimpicos", "olympics", "olympic", "jjoo",
+        "atletismo", "athletics", "natación", "natacion", "swimming",
+        "ciclismo", "cycling", "tenis", "tennis", "golf",
+        "boxeo", "boxing", "fórmula 1", "formula 1", "f1", "motogp",
+        "skeleton", "biatlón", "biatlon", "esquí", "esqui", "ski",
+        "gimnasia", "gymnastics", "balonmano", "handball",
+        "rugby", "hockey", "waterpolo", "surf",
+        "judo", "karate", "taekwondo",
+        "paralímpicos", "paralimpicos", "paralympics",
+        "triatlón", "triatlon", "triathlon",
+        "esgrima", "fencing", "vela", "sailing",
+        "halterofilia", "weightlifting", "lucha", "wrestling",
+        "tiro con arco", "archery", "piragüismo", "canoe",
+        "badminton", "squash", "padel", "pádel",
+        "voleibol", "volleyball", "baloncesto", "basketball", "nba",
     ]
 }
 
@@ -813,6 +830,11 @@ SPORT_DISPLAY = {
         "name": "Fútbol",
         "hashtag": "#Fútbol",
         "emoji": "⚽"
+    },
+    "other": {
+        "name": "Otros Deportes",
+        "hashtag": "#Deportes",
+        "emoji": "🏅"
     },
 }
 

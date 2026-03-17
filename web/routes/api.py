@@ -71,27 +71,31 @@ async def api_post_comment(
     if not user:
         return JSONResponse({"error": "No autenticado"}, status_code=401)
 
-    user_name = user["display_name"]
-    user_initials = user["initials"]
+    try:
+        user_name = user["display_name"]
+        user_initials = user["initials"]
 
-    # Sanitize
-    clean_text = html.escape(body.comment_text.strip())
-    if not clean_text:
-        return JSONResponse({"error": "Comentario vacio"}, status_code=400)
+        # Sanitize
+        clean_text = html.escape(body.comment_text.strip())
+        if not clean_text:
+            return JSONResponse({"error": "Comentario vacio"}, status_code=400)
 
-    repo = get_repository()
-    comment_id = repo.add_comment(
-        web_article_id=web_article_id,
-        user_name=html.escape(user_name),
-        user_initials=html.escape(user_initials),
-        comment_text=clean_text,
-        user_id=user["id"],
-    )
+        repo = get_repository()
+        comment_id = repo.add_comment(
+            web_article_id=web_article_id,
+            user_name=html.escape(user_name),
+            user_initials=html.escape(user_initials),
+            comment_text=clean_text,
+            user_id=user["id"],
+        )
 
-    return JSONResponse({
-        "id": comment_id,
-        "user_name": user_name,
-        "user_initials": user_initials,
-        "comment_text": clean_text,
-        "created_at": "now",
-    }, status_code=201)
+        return JSONResponse({
+            "id": comment_id,
+            "user_name": user_name,
+            "user_initials": user_initials,
+            "comment_text": clean_text,
+            "created_at": "now",
+        }, status_code=201)
+    except Exception as e:
+        logger.exception("Error posting comment")
+        return JSONResponse({"error": "Error al publicar comentario"}, status_code=500)
