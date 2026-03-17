@@ -282,13 +282,22 @@
         goTo(0);
     }
 
-    // --- Update team nav active state after AJAX navigation ---
+    // --- Update team nav active state + auto-scroll to active team ---
     function updateTeamNavActive(url) {
         var navLinks = document.querySelectorAll('.gf-team-nav__item');
         if (!navLinks.length) return;
         var path = url.split('?')[0]; // strip query string
         navLinks.forEach(function (link) {
-            link.classList.toggle('gf-team-nav__item--active', link.getAttribute('href') === path);
+            var isActive = link.getAttribute('href') === path;
+            link.classList.toggle('gf-team-nav__item--active', isActive);
+            if (isActive) {
+                // Auto-scroll the horizontal nav to center the active team
+                var scrollEl = link.closest('.gf-team-nav__scroll');
+                if (scrollEl) {
+                    var scrollTo = link.offsetLeft - scrollEl.offsetWidth / 2 + link.offsetWidth / 2;
+                    scrollEl.scrollTo({ left: Math.max(0, scrollTo), behavior: 'smooth' });
+                }
+            }
         });
     }
 
@@ -317,9 +326,7 @@
                             img.addEventListener('error', function () { img.classList.add('loaded'); });
                         }
                     });
-                    // Smooth scroll to top of content
-                    fresh.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Update team nav active state
+                    // Update team nav active state (no scroll reset)
                     updateTeamNavActive(url);
                 })
                 .catch(function (err) {
