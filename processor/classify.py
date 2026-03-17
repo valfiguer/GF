@@ -218,14 +218,11 @@ def classify_teams(item: NormalizedItem) -> list:
         if score < 2:
             continue
 
-        # Determine league(s) for this team
+        # Determine league(s) for this team — insert ALL memberships
         memberships = TEAM_LEAGUE_MEMBERSHIP.get(team_slug)
         if memberships:
-            if league_context and league_context in memberships:
-                results[(team_slug, league_context)] = score
-            else:
-                # Default to primary league
-                results[(team_slug, primary_league)] = score
+            for league in memberships:
+                results[(team_slug, league)] = score
         else:
             results[(team_slug, primary_league)] = score
 

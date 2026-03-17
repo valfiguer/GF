@@ -284,17 +284,22 @@
 
     // --- AJAX Pagination ---
     function initAjaxPagination() {
-        var container = document.getElementById('ajax-content');
-        if (!container) return;
+        if (!document.getElementById('ajax-content')) return;
 
         function loadPage(url) {
             var separator = url.indexOf('?') !== -1 ? '&' : '?';
             fetch(url + separator + '_fragment=1')
                 .then(function (res) { return res.text(); })
                 .then(function (html) {
-                    container.innerHTML = html;
+                    var current = document.getElementById('ajax-content');
+                    if (!current) return;
+                    // Replace entire container (outerHTML) to avoid nested #ajax-content
+                    current.outerHTML = html;
+                    // Re-query since the old DOM node was replaced
+                    var fresh = document.getElementById('ajax-content');
+                    if (!fresh) return;
                     // Re-init lazy images
-                    container.querySelectorAll('img[loading="lazy"]').forEach(function (img) {
+                    fresh.querySelectorAll('img[loading="lazy"]').forEach(function (img) {
                         if (img.complete) {
                             img.classList.add('loaded');
                         } else {
@@ -303,7 +308,7 @@
                         }
                     });
                     // Smooth scroll to top of content
-                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    fresh.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 })
                 .catch(function (err) {
                     console.error('AJAX pagination error:', err);
@@ -322,7 +327,7 @@
         });
 
         // Back/forward navigation
-        window.addEventListener('popstate', function (e) {
+        window.addEventListener('popstate', function () {
             if (document.getElementById('ajax-content')) {
                 loadPage(window.location.href);
             }

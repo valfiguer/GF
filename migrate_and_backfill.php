@@ -237,13 +237,14 @@ function classify_teams(string $title, string $body, array $teamAliases, array $
         }
         if ($score < 2) continue;
 
-        $leagueSlug = $primaryLeague;
+        // Insert entries for ALL leagues in team's membership
         if (isset($membership[$teamSlug])) {
-            if ($leagueContext && in_array($leagueContext, $membership[$teamSlug])) {
-                $leagueSlug = $leagueContext;
+            foreach ($membership[$teamSlug] as $lg) {
+                $results[] = ['team_slug' => $teamSlug, 'league_slug' => $lg, 'score' => $score];
             }
+        } else {
+            $results[] = ['team_slug' => $teamSlug, 'league_slug' => $primaryLeague, 'score' => $score];
         }
-        $results[] = ['team_slug' => $teamSlug, 'league_slug' => $leagueSlug, 'score' => $score];
     }
 
     usort($results, fn($a, $b) => $b['score'] - $a['score']);
