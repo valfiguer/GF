@@ -114,6 +114,8 @@ $canonicalUrl = $canonicalUrl ?? BASE_URL . $requestPath . $queryPage;
     }
     ?>
 
+    <?php View::partial('score_ticker', compact('lang', 'requestPath')); ?>
+
     <main style="flex: 1;">
         <?= $content ?>
     </main>

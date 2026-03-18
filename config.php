@@ -217,6 +217,15 @@ define('LEAGUES', [
     ],
 ]);
 
+// ── League slug → API name mapping (for ticker filtering) ──
+define('LEAGUE_SLUG_TO_NAME', [
+    'laliga'        => 'LaLiga',
+    'champions'     => 'UEFA Champions League',
+    'seriea'        => 'Serie A',
+    'premierleague' => 'Premier League',
+    'copadelrey'    => 'Copa del Rey',
+]);
+
 // ── Status config ──
 define('STATUS_CONFIG', [
     'CONFIRMADO' => [

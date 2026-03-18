@@ -89,6 +89,9 @@
         // --- Team Nav ---
         initTeamNav();
 
+        // --- Score Ticker ---
+        initScoreTicker();
+
         // --- AJAX Pagination ---
         initAjaxPagination();
 
@@ -389,6 +392,94 @@
             scrollEl.scrollTo({ left: Math.max(0, scrollTo), behavior: 'instant' });
             updateArrows();
         }
+    }
+
+    // --- Score Ticker ---
+    function initScoreTicker() {
+        var ticker = document.getElementById('gf-score-ticker');
+        if (!ticker) return;
+
+        var scrollEl = ticker.querySelector('.gf-score-ticker__scroll');
+        var leftBtn = ticker.querySelector('.gf-score-ticker__arrow--left');
+        var rightBtn = ticker.querySelector('.gf-score-ticker__arrow--right');
+        var league = ticker.getAttribute('data-ticker-league') || '';
+        if (!scrollEl) return;
+
+        function updateArrows() {
+            if (!leftBtn || !rightBtn) return;
+            var sl = scrollEl.scrollLeft;
+            var maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+            leftBtn.classList.toggle('hidden', sl <= 0);
+            rightBtn.classList.toggle('hidden', sl >= maxScroll - 1);
+        }
+
+        if (leftBtn) {
+            leftBtn.addEventListener('click', function () {
+                scrollEl.scrollBy({ left: -200, behavior: 'smooth' });
+            });
+        }
+        if (rightBtn) {
+            rightBtn.addEventListener('click', function () {
+                scrollEl.scrollBy({ left: 200, behavior: 'smooth' });
+            });
+        }
+
+        scrollEl.addEventListener('scroll', updateArrows);
+        window.addEventListener('resize', updateArrows);
+        updateArrows();
+
+        // Auto-refresh every 60 seconds
+        setInterval(function () {
+            var url = '/api/ticker';
+            if (league) url += '?league=' + encodeURIComponent(league);
+
+            fetch(url)
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (!data.matches || data.matches.length === 0) {
+                        ticker.style.display = 'none';
+                        return;
+                    }
+                    ticker.style.display = '';
+                    var html = '';
+                    data.matches.forEach(function (m) {
+                        var isLive = ['1H','2H','ET','LIVE','HT'].indexOf(m.status) !== -1;
+                        var statusClass = '';
+                        var statusText = m.status || '';
+                        if (['1H','2H','ET','LIVE'].indexOf(m.status) !== -1) {
+                            statusClass = 'gf-score-ticker__status--live';
+                            statusText = m.minute ? m.minute + "'" : m.status;
+                        } else if (m.status === 'HT') {
+                            statusClass = 'gf-score-ticker__status--ht';
+                            statusText = 'HT';
+                        } else if (['FT','AET','PEN'].indexOf(m.status) !== -1) {
+                            statusClass = 'gf-score-ticker__status--ft';
+                            statusText = m.status;
+                        } else if (m.status === 'NS') {
+                            statusClass = 'gf-score-ticker__status--ns';
+                            statusText = '--:--';
+                        }
+
+                        html += '<div class="gf-score-ticker__match' + (isLive ? ' gf-score-ticker__match--live' : '') + '">';
+                        html += '<div class="gf-score-ticker__team">';
+                        if (m.home_logo) html += '<img src="' + escapeHtml(m.home_logo) + '" alt="" class="gf-score-ticker__logo" width="18" height="18">';
+                        html += '<span class="gf-score-ticker__abbr">' + escapeHtml(m.home_abbr) + '</span>';
+                        html += '</div>';
+                        html += '<span class="gf-score-ticker__score">' + m.home_score + ' - ' + m.away_score + '</span>';
+                        html += '<div class="gf-score-ticker__team">';
+                        html += '<span class="gf-score-ticker__abbr">' + escapeHtml(m.away_abbr) + '</span>';
+                        if (m.away_logo) html += '<img src="' + escapeHtml(m.away_logo) + '" alt="" class="gf-score-ticker__logo" width="18" height="18">';
+                        html += '</div>';
+                        html += '<span class="gf-score-ticker__status ' + statusClass + '">' + escapeHtml(statusText) + '</span>';
+                        html += '</div>';
+                    });
+                    scrollEl.innerHTML = html;
+                    updateArrows();
+                })
+                .catch(function (err) {
+                    console.error('Ticker refresh error:', err);
+                });
+        }, 60000);
     }
 
     // --- Comments Logic ---

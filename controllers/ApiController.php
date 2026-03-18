@@ -28,6 +28,35 @@ class ApiController {
         View::renderJson(['matches' => $enriched]);
     }
 
+    public function ticker(): void {
+        $leagueName = null;
+        $slug = isset($_GET['league']) ? $_GET['league'] : null;
+        if ($slug && isset(LEAGUE_SLUG_TO_NAME[$slug])) {
+            $leagueName = LEAGUE_SLUG_TO_NAME[$slug];
+        }
+
+        $matches = LiveRepository::getTickerMatches($leagueName);
+        $result = [];
+        foreach ($matches as $m) {
+            $result[] = [
+                'id'         => $m['match_id'],
+                'home'       => $m['home_team'],
+                'away'       => $m['away_team'],
+                'home_abbr'  => TeamLogos::getAbbreviation($m['home_team']),
+                'away_abbr'  => TeamLogos::getAbbreviation($m['away_team']),
+                'home_logo'  => TeamLogos::getLogo($m['home_team']),
+                'away_logo'  => TeamLogos::getLogo($m['away_team']),
+                'home_score' => (int)$m['home_score'],
+                'away_score' => (int)$m['away_score'],
+                'status'     => $m['match_status'],
+                'minute'     => $m['current_minute'],
+                'league'     => $m['league_name'],
+            ];
+        }
+
+        View::renderJson(['matches' => $result]);
+    }
+
     public function getComments(string $webArticleId): void {
         $comments = CommentRepository::getByArticle((int)$webArticleId);
         View::renderJson(['comments' => $comments]);

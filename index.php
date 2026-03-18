@@ -14,6 +14,7 @@ require __DIR__ . '/core/I18n.php';
 require __DIR__ . '/core/Icons.php';
 require __DIR__ . '/core/Session.php';
 require __DIR__ . '/core/Auth.php';
+require __DIR__ . '/core/TeamLogos.php';
 
 require __DIR__ . '/models/ArticleRepository.php';
 require __DIR__ . '/models/CommentRepository.php';
@@ -49,6 +50,7 @@ $router->get('/league/([a-z]+)',          ['LeagueController',  'show']);
 // API
 $router->get('/api/articles',            ['ApiController',      'articles']);
 $router->get('/api/live',                ['ApiController',      'live']);
+$router->get('/api/ticker',             ['ApiController',      'ticker']);
 $router->get('/api/comments/(\d+)',      ['ApiController',      'getComments']);
 $router->post('/api/comments/(\d+)',     ['ApiController',      'postComment']);
 
