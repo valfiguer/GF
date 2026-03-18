@@ -16,7 +16,7 @@ $sportDisplay = SPORT_DISPLAY;
                     <a href="/" class="gf-segmented__item <?= $requestPath === '/' ? 'gf-segmented__item--active' : '' ?>"><?= e(t('nav.home', $lang)) ?></a>
                     <?php foreach ($sportDisplay as $sportKey => $sportInfo): ?>
                     <a href="/category/<?= e($sportKey) ?>" class="gf-segmented__item <?= $requestPath === '/category/' . $sportKey ? 'gf-segmented__item--active' : '' ?>">
-                        <?= e($sportInfo['name']) ?>
+                        <?= e($lang === 'en' ? $sportInfo['name_en'] : $sportInfo['name_es']) ?>
                     </a>
                     <?php endforeach; ?>
                     <a href="/live" class="gf-segmented__item gf-segmented__item--live <?= $requestPath === '/live' ? 'gf-segmented__item--active' : '' ?>">
@@ -82,7 +82,7 @@ $sportDisplay = SPORT_DISPLAY;
         <a href="/" class="gf-mobile-menu__link"><?= e(t('nav.home', $lang)) ?></a>
         <?php foreach ($sportDisplay as $sportKey => $sportInfo): ?>
         <a href="/category/<?= e($sportKey) ?>" class="gf-mobile-menu__link">
-            <?= e($sportInfo['name']) ?>
+            <?= e($lang === 'en' ? $sportInfo['name_en'] : $sportInfo['name_es']) ?>
         </a>
         <?php endforeach; ?>
         <a href="/live" class="gf-mobile-menu__link gf-mobile-menu__link--live">

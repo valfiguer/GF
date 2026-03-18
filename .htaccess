@@ -9,6 +9,8 @@ RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 
 # Serve existing files/dirs directly (static assets)
+# Exclude /live — it's a PHP route, not the Python live/ directory
+RewriteCond %{REQUEST_URI} !^/live
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]

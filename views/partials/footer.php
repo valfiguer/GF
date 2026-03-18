@@ -13,7 +13,7 @@
                 <h3 class="gf-footer__heading"><?= e(t('footer.categories', $lang)) ?></h3>
                 <ul class="gf-footer__links">
                     <?php foreach ($sportDisplay as $sportKey => $sportInfo): ?>
-                    <li><a href="/category/<?= e($sportKey) ?>" class="gf-footer__link"><?= e($sportInfo['name']) ?></a></li>
+                    <li><a href="/category/<?= e($sportKey) ?>" class="gf-footer__link"><?= e($lang === 'en' ? $sportInfo['name_en'] : $sportInfo['name_es']) ?></a></li>
                     <?php endforeach; ?>
                     <li><a href="/live" class="gf-footer__link gf-footer__link--live"><?= e(t('nav.live', $lang)) ?></a></li>
                 </ul>

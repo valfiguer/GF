@@ -1,9 +1,10 @@
 <?php
-$pageTitle       = $sportInfo['name'];
+$sportName       = $lang === 'en' ? $sportInfo['name_en'] : $sportInfo['name_es'];
+$pageTitle       = $sportName;
 $metaDescription = $lang === 'es'
-    ? "Últimas noticias de {$sportInfo['name']}: resultados, fichajes y análisis — GoalFeed"
-    : "Latest {$sportInfo['name']} news: results, transfers and analysis — GoalFeed";
-$ogTitle = $sportInfo['name'] . ' — GoalFeed';
+    ? "Últimas noticias de {$sportName}: resultados, fichajes y análisis — GoalFeed"
+    : "Latest {$sportName} news: results, transfers and analysis — GoalFeed";
+$ogTitle = $sportName . ' — GoalFeed';
 $ogDescription = $metaDescription;
 
 // JSON-LD BreadcrumbList
@@ -13,7 +14,7 @@ $headExtra = '<script type="application/ld+json">'
         '@type' => 'BreadcrumbList',
         'itemListElement' => [
             ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => BASE_URL . '/'],
-            ['@type' => 'ListItem', 'position' => 2, 'name' => $sportInfo['name']],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => $sportName],
         ],
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
     . '</script>';
@@ -22,7 +23,7 @@ $headExtra = '<script type="application/ld+json">'
 
     <!-- Header -->
     <div class="gf-category-header">
-        <h1 class="gf-category-header__title"><?= icon($sport) ?> <?= e($sportInfo['name']) ?></h1>
+        <h1 class="gf-category-header__title"><?= icon($sport) ?> <?= e($sportName) ?></h1>
         <p class="gf-category-header__count"><?= e(t('category.articles_count', $lang, ['count' => $total, 's' => ($total != 1 ? 's' : '')])) ?></p>
     </div>
 
@@ -58,7 +59,7 @@ $headExtra = '<script type="application/ld+json">'
 
     <?php else: ?>
     <div class="gf-empty">
-        <p class="gf-empty__text"><?= e(t('category.empty', $lang, ['sport' => $sportInfo['name']])) ?></p>
+        <p class="gf-empty__text"><?= e(t('category.empty', $lang, ['sport' => $sportName])) ?></p>
     </div>
     <?php endif; ?>
 </div>

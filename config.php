@@ -44,12 +44,14 @@ define('SESSION_MAX_AGE_DAYS', 30);
 // ── Sport display config ──
 define('SPORT_DISPLAY', [
     'football_eu' => [
-        'name'    => 'Fútbol',
+        'name_es' => 'Fútbol',
+        'name_en' => 'Football',
         'hashtag' => '#Fútbol',
         'emoji'   => '⚽',
     ],
     'other' => [
-        'name'    => 'Otros Deportes',
+        'name_es' => 'Otros Deportes',
+        'name_en' => 'Other Sports',
         'hashtag' => '#Deportes',
         'emoji'   => '🏅',
     ],
